@@ -1,0 +1,20 @@
+#themeColor{
+ background-color:#1da1f2;
+}
+.logo{
+ color: white !important;
+ font-weight: 800 !important;
+ font-size: 24px !important;
+}
+
+.header{
+ background-color: #1da1f2 !important;
+}
+.approve_all{
+ width: 35px;
+
+}
+.walla_img{
+ font-weight: 800;
+ font-size: 20px;
+}
