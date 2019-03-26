@@ -58,8 +58,7 @@
 
                     <div class="row">
                         <div class="col text-center">
-
-                            <button class="btn btn-primary border border-warning border-4"><img src="{{asset('assets/img/approved.png')}}" class="approve_all"><span class="walla_img">Save</span></button>
+                            <button class="btn btn-primary border border-warning border-4 my-2"><img src="{{asset('assets/img/approved.png')}}" class="approve_all"><span class="walla_img">Save</span></button>
 
                         </div>
                     </div>

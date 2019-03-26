@@ -62,7 +62,7 @@
                         <div class="row">
                             <div class="col text-center">
 
-                                <button class="btn btn-primary border border-warning border-4 post_now" post_to_sage="{{$id}}"><img src="{{asset('assets/img/approved.png')}}" class="approve_all"><span class="walla_img">APPROVE</span></button>
+                                <button class="btn btn-primary border border-warning border-4 post_now my-2" post_to_sage="{{$id}}"><img src="{{asset('assets/img/approved.png')}}" class="approve_all"><span class="walla_img">APPROVE</span></button>
 
                             </div>
                         </div>
@@ -189,8 +189,7 @@
 
 
 @section('scripts')
-
-
+    <script src="{{asset('assets/js/jquery-ui.js')}}"></script>
     <script src="{{asset('assets/js/jquery.dataTables.min.js')}}"></script>
     <script src="{{asset('assets/js/dataTables.bootstrap4.min.js')}}"></script>
     <script>
@@ -202,6 +201,7 @@
             var reject_id;
             $('#actual_expiry').datepicker();
          $('.approval').on('click',function () {
+             //alert('cool');
              approve_id = $(this).attr('approve_id');
 
              $.ajax({
