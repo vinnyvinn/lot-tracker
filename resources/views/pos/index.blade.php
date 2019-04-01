@@ -24,11 +24,11 @@
                       <tr>
                           <td>
                               @if($po->status ==\App\PurchaseOrder::ARRIVED_PO)
-                              <a href="{{url('batches/'.$po->id.'/edit')}}" class="btn btn-info btn-xs"><img src="{{asset('assets/img/tap.png')}}" alt="" width="25px"> {{$po->OrderNum}}</a></td>
+                              <a href="{{url('batches/'.$po->id.'/edit')}}" class="btn btn-info btn-xs"><img src="{{asset('assets/img/tap.png')}}" alt="" width="20px"> {{$po->OrderNum}}</a></td>
                           @elseif($po->status ==\App\PurchaseOrder::RECEIVED_STATUS)
-                              <a href="{{url('batches/'.$po->id.'/edit')}}" class="btn btn-warning btn-xs"><img src="{{asset('assets/img/tap.png')}}" alt="" width="25px"> {{$po->OrderNum}}</a>
+                              <a href="{{url('batches/'.$po->id.'/edit')}}" class="btn btn-warning btn-xs"><img src="{{asset('assets/img/tap.png')}}" alt="" width="20px"> {{$po->OrderNum}}</a>
                               @else
-                              <a href="{{url('approved-pos/'.$po->id.'/edit')}}" class="btn btn-success btn-xs"><img src="{{asset('assets/img/tap.png')}}" alt="" width="25px"> {{$po->OrderNum}}</a>
+                              <a href="{{url('approved-pos/'.$po->id.'/edit')}}" class="btn btn-success btn-xs"><img src="{{asset('assets/img/tap.png')}}" alt="" width="20px"> {{$po->OrderNum}}</a>
                           @endif
                           <td>{{ \Carbon\Carbon::parse($po->InvDate)->format('d/m/Y')}}</td>
                           <td>{{$po->supplier}}</td>

@@ -62,7 +62,7 @@
                         <div class="row">
                             <div class="col text-center">
 
-                                <button class="btn btn-primary border border-warning border-4 post_now my-2" post_to_sage="{{$id}}"><img src="{{asset('assets/img/approved.png')}}" class="approve_all"><span class="walla_img">APPROVE</span></button>
+                                <button class="btn btn-primary border border-warning border-4 post_now my-2" post_to_sage="{{$id}}"><img src="{{asset('assets/img/approved.png')}}" class="approve_all"><span class="walla_img">FINALIZE</span></button>
 
                             </div>
                         </div>

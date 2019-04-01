@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\BatchLine;
 use App\PurchaseOrder;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use LotTracker\BatchesDetails;
 use Excel;
@@ -48,17 +49,28 @@ class BatchesController extends Controller
                     'item' => $value->item,
                     'batch' => $value->batch,
                     'qty' => $value->qty,
-                    'expiry_date' => $value->expiry,
+                    'expiry_date' => Carbon::parse($value->expiry)->format('d/m/Y'),
                     'status' => PurchaseOrder::PENDING_STATUS,
                     'actual_batch' => $value->batch,
                     'actual_qty' => $value->qty,
-                    'actual_expiry' => $value->expiry,
+                    'actual_expiry' => Carbon::parse($value->expiry)->format('d/m/Y'),
                     'purchase_order_id' => $request->id
                 ];
             }
             if(!empty($arr)){
+
+                $po_no = PurchaseOrder::find($request->id)->OrderNum;
+              $pos = [];
+
+              foreach ($arr as $po){
+                if ($po['po'] ==$po_no ){
+                    $pos [] = $po;
+                }
+
+              }
+
                 Session::flash('success','Items Imported successfully.');
-                BatchLine::insert($arr);
+                BatchLine::insert($pos);
                 PurchaseOrder::find($request->id)->update(['status' => PurchaseOrder::RECEIVED_STATUS]);
 
             }
