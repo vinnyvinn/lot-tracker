@@ -8,4 +8,5 @@ class BtblInvoiceLines extends Model
 {
     protected $table = '_btblInvoiceLines';
     protected $connection = 'sqlsrv2';
+    public $timestamps = false;
 }

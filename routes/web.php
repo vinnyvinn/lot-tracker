@@ -22,3 +22,8 @@ Route::get('sample','BatchesController@Sample');
 Route::get('fetch-po/{id}','BatchesController@fetchDetails');
 Route::post('update-po/{id}','BatchesController@updatePoDetails');
 Route::resource('approved-pos','ApprovedPurchaseOrdersController');
+Route::resource('so','SaleOrdersController');
+Route::get('fetch-so/{id}','SaleOrdersController@fetchSo');
+Route::post('update-so/{id}','SaleOrdersController@updateSo');
+Route::get('approved-so/{id}','SaleOrdersController@approvedSo');
+

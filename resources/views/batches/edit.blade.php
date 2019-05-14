@@ -8,6 +8,7 @@
                 <div class="card-header">PO Batches
 
                     <a href="{{url('batches/'.$id)}}" class="btn btn-info pull-right"><img src="{{asset('assets/img/export.png')}}" alt="" width="25">Import</a>
+                    
                     <a href="{{url(url('sample'))}}" class="btn btn-info pull-right mx-2"><img src="{{asset('assets/img/download.png')}}" alt="" width="25">Download Sample</a>
                 </div>
                 <div class="card-body">
@@ -22,7 +23,7 @@
                             <th>Act. Qty</th>
                             <th>Expiry</th>
                             <th>Act. Expiry</th>
-                            <td>Statusss</td>
+                            <td>Status</td>
                             <th>Action</th>
                         </tr>
                         </thead>
@@ -48,10 +49,10 @@
                                         @endif
                                 </td>
                                 <td>
-                                    {{--@if($batch->status==\App\PurchaseOrder::PENDING_STATUS)--}}
+                                    @if($batch->status==\App\PurchaseOrder::PENDING_STATUS)
                                     <i class="fa fa-check-circle fa-2x approval" title="Approve" data-toggle="modal" data-target="#approve" approve_id="{{$batch->id}}"></i>
                                     <i class="fa fa-lock fa-2x rejected mx-3" title="Reject" data-toggle="modal" data-target="#rejects" reject_id="{{$batch->id}}"></i>
-                                {{--@endif--}}
+                                @endif
                                 </td>
                             </tr>
                         @endforeach

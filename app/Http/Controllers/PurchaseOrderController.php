@@ -16,12 +16,13 @@ class PurchaseOrderController extends Controller
     }
     public function index()
     {
+        PurchaseOrders::init()->getPOs();
        return view('pos.index')->with('pos',PurchaseOrder::all());
     }
 
     public function syncPO()
     {
-  PurchaseOrders::init()->getPOs();
+    PurchaseOrders::init()->getPOs();
   Session::flash('success','Pos imported successfully');
   return redirect('/pos');
     }

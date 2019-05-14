@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateApprovedPurchaseOrdersTable extends Migration
+class CreateSaleOrdersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,17 @@ class CreateApprovedPurchaseOrdersTable extends Migration
      */
     public function up()
     {
-        Schema::connection('sqlsrv2')->create('approved_purchase_orders', function (Blueprint $table) {
+        Schema::create('sale_orders', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('po');
-            $table->string('item');
-            $table->string('batch');
-            $table->string('expiry_date');
-            $table->string('qty');
+            $table->string('OrderNum');
+            $table->string('InvDate');
+            $table->string('client');
+            $table->string('cDescription');
+            $table->string('fQuantity');
+            $table->string('type');
+            $table->integer('auto_index');
             $table->string('status');
-            $table->boolean('posted')->default(0);
+            $table->string('item');
             $table->timestamps();
         });
     }
@@ -33,6 +35,6 @@ class CreateApprovedPurchaseOrdersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('approved_purchase_orders');
+        Schema::dropIfExists('sale_orders');
     }
 }

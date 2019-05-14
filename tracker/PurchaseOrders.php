@@ -24,9 +24,12 @@ class PurchaseOrders
         $pos = Invnum::join('OrdersSt', 'OrdersSt.StatusCounter', '=', 'InvNum.OrderStatusID')
             ->join('Vendor', 'Vendor.DCLink', '=', 'InvNum.AccountID')
             ->join('_btblInvoiceLines', '_btblInvoiceLines.iInvoiceID', '=', 'InvNum.AutoIndex')
+            ->join('StkItem','StkItem.StockLink','=','_btblInvoiceLines.iStockCodeID')
             ->where('Doctype', 5)
-            ->where('OrdersSt.StatusDescrip', 'ARRIVED')
-            ->select('Invnum.AutoIndex', 'Invnum.OrderNum', 'Invnum.InvDate', 'Vendor.Name', '_btblInvoiceLines.cDescription', '_btblInvoiceLines.fQuantity')
+            ->where('DocState','<>',4)
+            ->orWhereIn('StkItem.ulIIItemType',['LOT','SERIAL'])
+            ->Where('OrdersSt.StatusDescrip', 'ARRIVED')
+            ->select('Invnum.AutoIndex', 'Invnum.OrderNum', 'Invnum.InvDate', 'Vendor.Name', '_btblInvoiceLines.cDescription', '_btblInvoiceLines.fQuantity','StkItem.ulIIItemType')
             ->get();
 
         self::checkPos($pos);
@@ -43,17 +46,16 @@ class PurchaseOrders
                 'supplier' => $po->Name,
                 'cDescription' => $po->cDescription,
                 'fQuantity' => $po->fQuantity,
-                'status' => PurchaseOrder::ARRIVED_PO
+                'status' => PurchaseOrder::ARRIVED_PO,
+                'type' =>$po->ulIIItemType
             ]);
         });
-
         return true;
     }
 
     public function checkPos($pos)
     {
         $all_pos = PurchaseOrder::get();
-
         $results = [];
         $results_found = [];
         if ($all_pos->count() > 0) {
@@ -61,7 +63,6 @@ class PurchaseOrders
                 $results[] = $result->auto_index;
             }
             foreach ($pos as $p) {
-
                 if (!in_array($p->AutoIndex, $results)) {
                     $results_found[] = $p;
                 }
@@ -72,8 +73,7 @@ class PurchaseOrders
                 return true;
             }
         }
-
-        self::storePos(self::allPos());
+       self::storePos(self::allPos());
     }
 
     public function allPos()
@@ -81,11 +81,13 @@ class PurchaseOrders
         $pos = Invnum::join('OrdersSt', 'OrdersSt.StatusCounter', '=', 'InvNum.OrderStatusID')
             ->join('Vendor', 'Vendor.DCLink', '=', 'InvNum.AccountID')
             ->join('_btblInvoiceLines', '_btblInvoiceLines.iInvoiceID', '=', 'InvNum.AutoIndex')
+            ->join('StkItem','StkItem.StockLink','=','_btblInvoiceLines.iStockCodeID')
             ->where('Doctype', 5)
-            ->where('OrdersSt.StatusDescrip', 'ARRIVED')
-            ->select('AutoIndex', 'OrderNum', 'InvDate', 'Vendor.Name', '_btblInvoiceLines.cDescription', '_btblInvoiceLines.fQuantity')
+            ->where('DocState','<>',4)
+            ->orWhereIn('StkItem.ulIIItemType',['LOT','SERIAL'])
+            ->Where('OrdersSt.StatusDescrip', 'ARRIVED')
+            ->select('Invnum.AutoIndex', 'Invnum.OrderNum', 'Invnum.InvDate', 'Vendor.Name', '_btblInvoiceLines.cDescription', '_btblInvoiceLines.fQuantity','StkItem.ulIIItemType')
             ->get();
-
-        return $pos;
+       return $pos;
     }
 }

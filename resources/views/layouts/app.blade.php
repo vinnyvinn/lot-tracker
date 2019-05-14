@@ -41,7 +41,7 @@
                     @auth
                     <span>
                         <a href="{{url('pos')}}" class="btn btn-success" style="margin-left: 80px"><img src="{{asset('assets/img/purchase.png')}}" alt="" width="50px"><span class="menu-i" style="font-weight: 600"> POS</span> </a>
-                          <a href="{{url('sync-po')}}" class="btn btn-success"><img src="{{asset('assets/img/po.png')}}" alt="" width="50px"><span class="menu-i" style="font-weight: 600"> Fetch POS</span> </a>
+                          <a href="{{url('so')}}" class="btn btn-success"><img src="{{asset('assets/img/po.png')}}" alt="" width="50px"><span class="menu-i" style="font-weight: 600"> Sale Orders</span> </a>
                     </span>
                         @endauth
                 </div>

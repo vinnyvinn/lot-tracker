@@ -40,6 +40,7 @@ class BatchesController extends Controller
      */
     public function store(Request $request)
     {
+
         $path = $request->file('import_file')->getRealPath();
         $data = Excel::load($path)->get();
         if($data->count()){
@@ -49,11 +50,11 @@ class BatchesController extends Controller
                     'item' => $value->item,
                     'batch' => $value->batch,
                     'qty' => $value->qty,
-                    'expiry_date' => Carbon::parse($value->expiry)->format('d/m/Y'),
+                    'expiry_date' => $value->expiry,
                     'status' => PurchaseOrder::PENDING_STATUS,
                     'actual_batch' => $value->batch,
                     'actual_qty' => $value->qty,
-                    'actual_expiry' => Carbon::parse($value->expiry)->format('d/m/Y'),
+                    'actual_expiry' => $value->expiry,
                     'purchase_order_id' => $request->id
                 ];
             }
@@ -68,6 +69,7 @@ class BatchesController extends Controller
                 }
 
               }
+
 
                 Session::flash('success','Items Imported successfully.');
                 BatchLine::insert($pos);

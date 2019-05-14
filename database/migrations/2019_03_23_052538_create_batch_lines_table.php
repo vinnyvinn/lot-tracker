@@ -24,6 +24,8 @@ class CreateBatchLinesTable extends Migration
             $table->string('actual_batch');
             $table->string('actual_qty');
             $table->string('actual_expiry');
+            $table->integer('purchase_order_id')->nullable();
+            $table->string('description')->nullable();
             $table->timestamps();
         });
     }

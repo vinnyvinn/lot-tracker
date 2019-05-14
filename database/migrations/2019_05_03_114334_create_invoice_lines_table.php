@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePurchaseOrdersTable extends Migration
+class CreateInvoiceLinesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,23 @@ class CreatePurchaseOrdersTable extends Migration
      */
     public function up()
     {
-        Schema::create('purchase_orders', function (Blueprint $table) {
+        Schema::create('invoice_lines', function (Blueprint $table) {
             $table->increments('id');
             $table->string('OrderNum');
             $table->string('InvDate');
-            $table->string('supplier');
             $table->string('cDescription');
             $table->string('fQuantity');
-            $table->string('type');
             $table->integer('auto_index');
             $table->string('status');
-            $table->string('state')->default(0);
+            $table->string('item');
+            $table->string('idInvoiceLines');
+            $table->string('GrvNumber')->nullable();
+            $table->string('cAccountName');
+            $table->string('fUnitCost')->default(0);
+            $table->string('fQtyToProcess')->default(0);
+            $table->string('fUnitPriceExcl')->default(0);
+            $table->string('iStockCodeID');
+            $table->string('reason')->nullable();
             $table->timestamps();
         });
     }
@@ -35,6 +41,6 @@ class CreatePurchaseOrdersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('purchase_orders');
+        Schema::dropIfExists('invoice_lines');
     }
 }

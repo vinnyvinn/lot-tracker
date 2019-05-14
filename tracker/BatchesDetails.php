@@ -23,8 +23,8 @@ static function init(){
             'PO' => 'P001',
            'ITEM' => 'I-01',
            'BATCH' => 'B-01',
-           'QTY' => '5000',
-           'EXPIRY' => Carbon::parse(Carbon::now())->format('d/m/Y')
+           'QTY' => 50,
+           'EXPIRY' => date('d/m/Y')
 
        ];
 
