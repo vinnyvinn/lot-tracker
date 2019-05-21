@@ -30,6 +30,14 @@ class CreateInvoiceLinesTable extends Migration
             $table->string('fUnitPriceExcl')->default(0);
             $table->string('iStockCodeID');
             $table->string('reason')->nullable();
+            $table->string('qty_received')->default(0);
+            $table->string('qty_rejected')->default(0);
+            $table->string('reject_reason')->nullable();
+            $table->string('qc_done')->default(0);
+            $table->string('qty_accepted')->default(0);
+            $table->string('qty_remaining');
+            $table->string('state')->default(\App\InvoiceLine::STATE_NOT_RECEIVED);
+            $table->text('batch_data')->nullable();
             $table->timestamps();
         });
     }

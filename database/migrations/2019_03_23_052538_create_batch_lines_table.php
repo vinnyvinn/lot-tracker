@@ -26,6 +26,12 @@ class CreateBatchLinesTable extends Migration
             $table->string('actual_expiry');
             $table->integer('purchase_order_id')->nullable();
             $table->string('description')->nullable();
+            $table->string('qty_received')->default(0);
+            $table->string('qty_rejected')->default(0);
+            $table->string('reject_reason')->nullable();
+            $table->string('qc_done')->default(0);
+            $table->string('qty_accepted')->default(0);
+            $table->integer('auto_index');
             $table->timestamps();
         });
     }

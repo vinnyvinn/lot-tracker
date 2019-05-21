@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\ApprovedPurchaseOrder;
+use App\BatchLine;
 use App\PurchaseOrder;
+use App\RejectReason;
 use http\Env\Response;
 use Illuminate\Http\Request;
 use LotTracker\AppprovePurchaseOrders;
@@ -63,9 +65,28 @@ class ApprovedPurchaseOrdersController extends Controller
         }
         AppprovePurchaseOrders::init()->storeToSage($id);
         return response()->json($batches);
-
        }
 
+    public function processPos($id)
+    {
+        PurchaseOrder::find($id)->update(['status' => PurchaseOrder::PROCESSED_STATUS]);
+        return response()->json($id);
+       }
+
+    public function poStatus($id)
+    {
+        $batches = PurchaseOrder::find($id)->batches;
+          if (count($batches) < 1){
+            return response('nodata');
+        }
+        foreach ($batches as $batch){
+               if ($batch->status == PurchaseOrder::PENDING_STATUS){
+                return response('fail');
+            }
+        }
+        return response('success');
+
+       }
     /**
      * Show the form for editing the specified resource.
      *
@@ -74,8 +95,9 @@ class ApprovedPurchaseOrdersController extends Controller
      */
     public function edit($id)
     {
-        return view('pos.approved.edit')->with('batches',PurchaseOrder::find($id)->batches)->with('id',$id);
+        return view('pos.approved.edit')->with('batches',PurchaseOrder::find($id)->batches)->with('id',$id)->with('reasons',RejectReason::all());
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -84,9 +106,23 @@ class ApprovedPurchaseOrdersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        BatchLine::find($request->get('id'))->update([
+            'qty_rejected' => $request->get('qty_rejected'),
+            'qty_accepted' => $request->get('qty_accepted'),
+            'reject_reason' => $request->get('rejection_reason'),
+            'qc_done' => 1
+        ]);
+        Session::flash('success','Inspection successfully done.');
+        return response()->json($request->all());
+    }
+
+    public function newReason()
+    {
+        RejectReason::create(['reason' => request()->get('reason')]);
+        Session::flash('success','Reason was successfully added');
+        return redirect('/approved-pos/'.request()->get('id').'/edit');
     }
 
     /**

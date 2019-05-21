@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\BatchLine;
+use App\BtblInvoiceLines;
 use App\PurchaseOrder;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -32,6 +33,36 @@ class BatchesController extends Controller
 
     }
 
+    public function createBatch($id)
+    {
+    return view('batches.create')->with('po',PurchaseOrder::find($id));
+}
+
+    public function storeBatch()
+    {
+
+       $po = PurchaseOrder::find(request()->get('id'));
+         $data = request()->get('addmore');
+            foreach ($data as $b){
+             BatchLine::create([
+                 'po' => $po->OrderNum,
+                 'item' => $b['item'],
+                 'qty'=>$b['qty'],
+                 'batch' => $b['batch'],
+                 'expiry_date'=> $b['expiry'],
+                 'status' => PurchaseOrder::PENDING_STATUS,
+                 'actual_batch'=> $b['batch'],
+                 'actual_qty' => $b['qty'],
+                 'actual_expiry' => $b['expiry'],
+                 'purchase_order_id' => request()->get('id'),
+                 'auto_index' => PurchaseOrder::find(request()->get('id'))->auto_index
+             ]);
+         }
+
+        Session::flash('success','Items Imported successfully.');
+        $po->update(['status' => PurchaseOrder::RECEIVED_STATUS]);
+        return redirect('/batches/'.request()->get('id').'/edit');
+}
     /**
      * Store a newly created resource in storage.
      *
@@ -55,14 +86,14 @@ class BatchesController extends Controller
                     'actual_batch' => $value->batch,
                     'actual_qty' => $value->qty,
                     'actual_expiry' => $value->expiry,
-                    'purchase_order_id' => $request->id
+                    'purchase_order_id' => $request->id,
+                    'auto_index' => PurchaseOrder::find($request->id)->auto_index
                 ];
             }
             if(!empty($arr)){
 
                 $po_no = PurchaseOrder::find($request->id)->OrderNum;
               $pos = [];
-
               foreach ($arr as $po){
                 if ($po['po'] ==$po_no ){
                     $pos [] = $po;
@@ -102,7 +133,7 @@ class BatchesController extends Controller
     public function edit($id)
     {
 
-       return view('batches.edit')->with('batches',PurchaseOrder::find($id)->batches)->with('id',$id);
+       return view('batches.edit')->with('batches',PurchaseOrder::find($id))->with('id',$id);
     }
 
     /**

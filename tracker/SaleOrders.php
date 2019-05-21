@@ -4,6 +4,8 @@
 namespace LotTracker;
 
 
+use App\ApprovedSaleOrder;
+use App\BatchLine;
 use App\BtblInvoiceLines;
 use App\Invnum;
 use App\InvoiceLine;
@@ -99,7 +101,8 @@ class SaleOrders
         'fUnitCost' => $line->fUnitCost,
         'fQtyToProcess'=>$line->fQtyToProcess,
         'fUnitPriceExcl' => $line->fUnitPriceExcl,
-        'iStockCodeID' => $line->iStockCodeID
+        'iStockCodeID' => $line->iStockCodeID,
+        'qty_remaining' => $line->fQuantity
 
     ]);
 });
@@ -121,8 +124,28 @@ return true;
     public function updateLines($id)
     {
         $lines = SaleOrder::find($id);
+     foreach ($lines->lines as $ln){
+           if($ln->qc_done ==0){
+               return 'fail';
+           }
+       }
         if (count($lines->lines) < 1){
             return 'noitems';
+        }
+        foreach ($lines->lines as $ln){
+            foreach (json_decode($ln->batch_data) as $b){
+                foreach (BatchLine::where('id',$b->lot_number)->get() as $value){
+                    ApprovedSaleOrder::create([
+                        'po' => $value->po,
+                        'item' => $value->item,
+                        'batch'=> $b->name,
+                        'expiry_date' => $value->expiry_date,
+                        'qty' => $b->qty,
+                        'status' => $value->status,
+                        'posted' => 1
+                    ]);
+                }
+            }
         }
         collect($lines->lines)->map(function ($line) {
                  BtblInvoiceLines::where('idInvoiceLines', $line->idInvoiceLines)
@@ -132,5 +155,22 @@ return true;
         $lines->update(['status' => SaleOrder::STATUS_ISSUED]);
         return true;
     }
-
+    function getBatchLines($id){
+        $batches = InvoiceLine::find($id);
+        $batch_data = [];
+                foreach (json_decode($batches->batch_data) as $b){
+                foreach (BatchLine::where('id',$b->lot_number)->get() as $value){
+                    $batch_data[] = [
+                        'po' => $value->po,
+                        'item' => $value->item,
+                        'batch'=> $b->name,
+                        'expiry_date' => $value->expiry_date,
+                        'qty' => $b->qty,
+                        'status' => $batches->status,
+                        'reason' => $batches->reject_reason
+                    ];
+               }
+        }
+return collect($batch_data);
+    }
 }

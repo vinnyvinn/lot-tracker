@@ -10,6 +10,7 @@ class SaleOrder extends Model
 
     const STATUS_ISSUED='Issued';
     const STATUS_NOT_ISSUED='Not Issued';
+    const STATUS_PROCESSED = 'Processed';
 
     function lines(){
         return $this->hasMany(InvoiceLine::class,'auto_index');

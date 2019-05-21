@@ -24,14 +24,20 @@
                         @foreach($sales as $so)
                             <tr>
                                 <td>
+                                    @if($so->status== \App\SaleOrder::STATUS_NOT_ISSUED)
                                    <a href="{{url('/so/'.$so->id)}}" class="btn btn-info btn-xs"><img src="{{asset('assets/img/tap.png')}}" alt="" width="20px"> {{$so->OrderNum}}</a>
+                                @elseif($so->status == \App\SaleOrder::STATUS_PROCESSED)
+                                <a href="{{url('/so/'.$so->id)}}" class="btn btn-warning btn-xs"><img src="{{asset('assets/img/tap.png')}}" alt="" width="20px"> {{$so->OrderNum}}</a>
+                                    @elseif($so->status == \App\SaleOrder::STATUS_ISSUED)
+                                        <span class="label label-default" style="font-size: 14px">{{$so->OrderNum}}</span>
+                               @endif
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($so->InvDate)->format('d/m/Y')}}</td>
                                 <td>{{$so->client}}</td>
                                 <td>{{$so->item}}</td>
                                 <td>{{$so->fQuantity}}</td>
                                 <td>
-                                   {{$so->cDescription}}
+                                 {{$so->cDescription}}
                                 </td>
                                 <td>
                                     @if($so->status== \App\SaleOrder::STATUS_NOT_ISSUED)
@@ -40,7 +46,6 @@
                                         <span class="label label-success">{{$so->status}}</span>
                                     @endif
                                 </td>
-
                             </tr>
                         @endforeach
                         </tbody>

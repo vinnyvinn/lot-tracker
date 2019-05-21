@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\BatchLine;
 use App\BtblInvoiceLines;
 use App\InvoiceLine;
+use App\RejectReason;
 use App\SaleOrder;
 use Illuminate\Http\Request;
+use LotTracker\Reports;
 use LotTracker\SaleOrders;
+use Session;
 
 class SaleOrdersController extends Controller
 {
@@ -26,9 +30,10 @@ class SaleOrdersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($id)
     {
-        //
+
+        return view('sales.show_batches')->with('batches',SaleOrders::sales()->getBatchLines($id));
     }
 
     /**
@@ -39,7 +44,8 @@ class SaleOrdersController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+     dd(Reports::init()->checkType($request->all()));
     }
 
     /**
@@ -51,7 +57,22 @@ class SaleOrdersController extends Controller
     public function show($id)
     {
 
-        return view('sales.show')->with('inv_lines', SaleOrder::find($id));
+        if(SaleOrder::find($id)->status== SaleOrder::STATUS_NOT_ISSUED || SaleOrder::find($id)->status== SaleOrder::STATUS_ISSUED){
+
+            return view('sales.show')->with('inv_lines',SaleOrder::find($id));
+        }
+        elseif(SaleOrder::find($id)->status== SaleOrder::STATUS_PROCESSED){
+           return view('sales.create')->with('inv_lines',SaleOrder::find($id))->with('reasons',RejectReason::all());
+        }
+
+
+    }
+
+    public function addReason()
+    {
+        RejectReason::create(['reason' => request()->get('reason')]);
+        Session::flash('success','Reason was successfully added');
+        return redirect('/so/'.request()->get('id'));
     }
 
     /**
@@ -62,21 +83,78 @@ class SaleOrdersController extends Controller
      */
     public function edit($id)
     {
-        //
+       return view('sales.edit')->with('batches',InvoiceLine::find($id));
     }
 
     public function fetchSo($id)
     {
         $inv = InvoiceLine::find($id);
-        return response()->json($inv);
+        $batches = [];
+        $b_ids = [];
+        if ($inv->batch_data){
+          foreach (json_decode($inv->batch_data) as $bt){
+              $b_ids[] = $bt->lot_number;
+          }
+            foreach ($inv->batch_lines as $b){
+                if(!in_array($b->id,$b_ids)){
+                    $batches[] = $b;
+                }
+            }
+        }
+       return response()->json(['lines' => $inv,'batches' => $batches ? $batches :$inv->batch_lines]);
     }
 
     public function updateSo(Request $request, $id)
     {
+
         InvoiceLine::find($id)->update($request->except('_token'));
         return response()->json($request->all());
     }
 
+    public function lotQty($id)
+    {
+        $qty = BatchLine::find($id)->actual_qty;
+        return response()->json($qty);
+}
+
+    public function updateInvLines()
+    {
+        $inv =InvoiceLine::find(request()->get('id'));
+        $my_data= [];
+        $clean_data =[];
+         if($inv->batch_data){
+          $my_data[] = $inv->batch_data;
+        }
+       $batch_data[] = [
+            'lot_number' => request()->get('lot_number'),
+            'qty' => request()->get('fQuantity'),
+            'name' => BatchLine::find(request()->get('lot_number'))->actual_batch
+        ];
+       array_push($my_data,json_encode($batch_data));
+
+foreach (json_decode(collect($my_data)) as $d){
+    foreach (collect(json_decode($d)) as $value){
+
+             $clean_data[] =[
+            'lot_number' => $value->lot_number,
+            'qty' => $value->qty,
+            'name' => $value->name
+        ];
+    }
+    }
+        $inv->update([
+            'batch_data' => json_encode($clean_data),
+            'qty_remaining' => $inv->qty_remaining-request()->get('fQuantity'),
+            'qty_received' => $inv->qty_received+request()->get('fQuantity'),
+        ]);
+        $inv->update([
+            'state' => $inv->qty_remaining < 1 ? InvoiceLine::STATE_FULLY_RECEIVED : InvoiceLine::STATE_PARTIALLY_RECEIVED
+        ]);
+
+  Session::flash('success','Operation successfully performed.');
+  return redirect()->back();
+
+}
     /**
      * Update the specified resource in storage.
      *
@@ -84,19 +162,42 @@ class SaleOrdersController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        InvoiceLine::find($request->get('id'))->update([
+            'qty_rejected' => $request->get('qty_rejected'),
+            'qty_accepted' => $request->get('qty_accepted'),
+            'reject_reason' => $request->get('rejection_reason'),
+            'qc_done' => 1,
+            'state' => $request->get('actual_qty_2') == $request->get('qty_accepted') ? InvoiceLine::STATE_FULLY_RECEIVED : InvoiceLine::STATE_PARTIALLY_RECEIVED
+        ]);
+        Session::flash('success','Inspection successfully done.');
+        return redirect()->back();
     }
 
     public function approvedSo($id)
     {
-         $so =SaleOrders::sales()->updateLines($id);
+       $so =SaleOrders::sales()->updateLines($id);
+
        return response()->json($so);
          return redirect('/so');
 
 
     }
+
+    public function processSo($id)
+    {
+    $so = SaleOrder::find($id);
+foreach ($so->lines as $ln){
+    if($ln->status == InvoiceLine::STATUS_PENDING){
+        return response('fail');
+    }
+}
+    $so->update(['status' => SaleOrder::STATUS_PROCESSED]);
+   return redirect('/so');
+    }
+
+
 
     /**
      * Remove the specified resource from storage.
