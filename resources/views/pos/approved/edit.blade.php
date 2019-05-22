@@ -7,8 +7,10 @@
             <div class="card">
                 <div class="card-header">PO Batches
 
+{{--                @if($batches->status != \App\PurchaseOrder::APPROVED_STATUS || $batches->status != \App\PurchaseOrder::PROCESSED_STATUS)--}}
                     <a href="{{url('batches/'.$id)}}" class="btn btn-info pull-right"><img src="{{asset('assets/img/export.png')}}" alt="" width="25">Import</a>
                     <a href="{{url(url('sample'))}}" class="btn btn-info pull-right mx-2"><img src="{{asset('assets/img/download.png')}}" alt="" width="25">Download Sample</a>
+{{--               @endif--}}
                 </div>
                 <div class="card-body">
                     <table class="table table-striped table-bordered pos" style="width:100%">
@@ -30,8 +32,9 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @if(count($batches))
-                            @foreach($batches as $batch)
+                        @if(count($batches->batches))
+                            @foreach($batches->batches as $batch)
+
                                 <tr>
                                     <td>
                                         @if($batch->qc_done ==0)

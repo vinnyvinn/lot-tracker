@@ -22,7 +22,7 @@ class CreateApprovedSaleOrdersTable extends Migration
             $table->string('expiry_date');
             $table->string('qty');
             $table->string('status');
-            $table->boolean('posted')->default(0);
+            $table->boolean('posted')->default(1);
             $table->timestamps();
         });
     }

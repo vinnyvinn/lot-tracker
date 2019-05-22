@@ -29,7 +29,8 @@
                                 @elseif($so->status == \App\SaleOrder::STATUS_PROCESSED)
                                 <a href="{{url('/so/'.$so->id)}}" class="btn btn-warning btn-xs"><img src="{{asset('assets/img/tap.png')}}" alt="" width="20px"> {{$so->OrderNum}}</a>
                                     @elseif($so->status == \App\SaleOrder::STATUS_ISSUED)
-                                        <span class="label label-default" style="font-size: 14px">{{$so->OrderNum}}</span>
+                                        <a href="{{url('/so/'.$so->id)}}"> <span class="label label-default" style="font-size: 14px">{{$so->OrderNum}}</span></a>
+
                                @endif
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($so->InvDate)->format('d/m/Y')}}</td>

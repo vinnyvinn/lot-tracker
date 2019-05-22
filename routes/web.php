@@ -41,5 +41,5 @@ Route::get('show-batches/{id}','SaleOrdersController@create');
 Route::resource('reports','ReportsController');
 Route::get('/so/excel/{from}/{to}','ReportsController@soExcelExport');
 Route::get('/po/excel/{from}/{to}','ReportsController@poExcelExport');
-
+Route::resource('settings','SettingsController');
 

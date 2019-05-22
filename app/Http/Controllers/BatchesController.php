@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\BatchLine;
 use App\BtblInvoiceLines;
 use App\PurchaseOrder;
+use App\RejectReason;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use LotTracker\BatchesDetails;
@@ -98,10 +99,7 @@ class BatchesController extends Controller
                 if ($po['po'] ==$po_no ){
                     $pos [] = $po;
                 }
-
               }
-
-
                 Session::flash('success','Items Imported successfully.');
                 BatchLine::insert($pos);
                 PurchaseOrder::find($request->id)->update(['status' => PurchaseOrder::RECEIVED_STATUS]);
@@ -132,8 +130,19 @@ class BatchesController extends Controller
      */
     public function edit($id)
     {
+        $batches = PurchaseOrder::find($id);
+        if($batches->status == PurchaseOrder::PENDING_STATUS || $batches->status == PurchaseOrder::RECEIVED_STATUS){
+            return view('batches.edit')->with('batches',PurchaseOrder::find($id))->with('id',$id);
+        }
+        elseif ($batches->status == PurchaseOrder::PROCESSED_STATUS){
 
-       return view('batches.edit')->with('batches',PurchaseOrder::find($id))->with('id',$id);
+            return view('pos.approved.edit')->with('batches',PurchaseOrder::find($id))->with('id',$id)->with('reasons',RejectReason::all());
+        }
+        elseif ($batches->status == PurchaseOrder::APPROVED_STATUS){
+           return view('pos.show')->with('batches',PurchaseOrder::find($id))->with('id',$id);
+        }
+
+
     }
 
     /**

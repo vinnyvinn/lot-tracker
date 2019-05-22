@@ -333,27 +333,46 @@
             });
             $('.post_now').on('click',function () {
                 var posted = $(this).attr('post_to_sage');
+
                 $.ajax({
                     url:'{{url('approved-so')}}' + '/'+ posted,
                     type:'GET',
                     success: function (response) {
                         console.log(response);
                         if(response=='noitems'){
-                            toastr.warning('fail','Sorry,You do not have invoice lines in this invoice')
+                            return toastr.warning('fail','Sorry,You do not have invoice lines in this invoice')
                         }
-                        else{
+
                             window.location.reload();
-                        }
+
                     }
                 })
             });
             $('.process_now').on('click',function () {
                 var so = $(this).attr('post_to');
+
                $.ajax({
                     url:'{{url('process-so')}}'+ '/'+so,
                     type:'GET',
                     success: function (response) {
                        console.log(response)
+                        if (response == 'proceed'){
+                        console.log(so);
+                            $.ajax({
+                                url:'{{url('approved-so')}}' + '/'+ so,
+                                type:'GET',
+                                success: function (response) {
+                                    console.log(response);
+                                    if(response=='fail'){
+                                       return toastr.warning('fail','Sorry,Kindly Inspect first all the invoice lines before proceeding.')
+                                    }
+                                    if(response=='noitems'){
+                                        return toastr.warning('fail','Sorry,You do not have invoice lines in this invoice')
+                                    }
+                                  window.location.href='{{url('/so')}}';
+                                   }
+                            })
+                        }
                         if(response=='fail'){
                             return toastr.warning('fail','Sorry,You have not either approved/rejected all the invoice lines.')
                         }

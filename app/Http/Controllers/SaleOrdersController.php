@@ -7,6 +7,7 @@ use App\BtblInvoiceLines;
 use App\InvoiceLine;
 use App\RejectReason;
 use App\SaleOrder;
+use App\Setting;
 use Illuminate\Http\Request;
 use LotTracker\Reports;
 use LotTracker\SaleOrders;
@@ -56,15 +57,16 @@ class SaleOrdersController extends Controller
      */
     public function show($id)
     {
-
-        if(SaleOrder::find($id)->status== SaleOrder::STATUS_NOT_ISSUED || SaleOrder::find($id)->status== SaleOrder::STATUS_ISSUED){
-
-            return view('sales.show')->with('inv_lines',SaleOrder::find($id));
+        if(SaleOrder::find($id)->status== SaleOrder::STATUS_NOT_ISSUED){
+         return view('sales.show')->with('inv_lines',SaleOrder::find($id));
         }
         elseif(SaleOrder::find($id)->status== SaleOrder::STATUS_PROCESSED){
+
            return view('sales.create')->with('inv_lines',SaleOrder::find($id))->with('reasons',RejectReason::all());
         }
-
+     elseif (SaleOrder::find($id)->status== SaleOrder::STATUS_ISSUED){
+         return view('sales.issued')->with('inv_lines',SaleOrder::find($id))->with('reasons',RejectReason::all());
+     }
 
     }
 
@@ -180,18 +182,22 @@ foreach (json_decode(collect($my_data)) as $d){
        $so =SaleOrders::sales()->updateLines($id);
 
        return response()->json($so);
-         return redirect('/so');
+         //return redirect('/so');
 
 
     }
 
     public function processSo($id)
     {
+
     $so = SaleOrder::find($id);
-foreach ($so->lines as $ln){
+    foreach ($so->lines as $ln){
     if($ln->status == InvoiceLine::STATUS_PENDING){
         return response('fail');
     }
+        if (Setting::first()->enable_inspection == Setting::DISABLE_INSPECTION){
+            return response('proceed');
+        }
 }
     $so->update(['status' => SaleOrder::STATUS_PROCESSED]);
    return redirect('/so');

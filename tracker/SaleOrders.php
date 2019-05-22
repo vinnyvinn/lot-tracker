@@ -10,6 +10,7 @@ use App\BtblInvoiceLines;
 use App\Invnum;
 use App\InvoiceLine;
 use App\SaleOrder;
+use App\Setting;
 use DB;
 use Carbon\Carbon;
 
@@ -123,9 +124,10 @@ return true;
 
     public function updateLines($id)
     {
+
         $lines = SaleOrder::find($id);
      foreach ($lines->lines as $ln){
-           if($ln->qc_done ==0){
+           if($ln->qc_done ==0 && Setting::first()->enable_inspection == Setting::ENABLE_INSPECTION){
                return 'fail';
            }
        }
@@ -147,13 +149,14 @@ return true;
                 }
             }
         }
+
         collect($lines->lines)->map(function ($line) {
                  BtblInvoiceLines::where('idInvoiceLines', $line->idInvoiceLines)
                 ->where('iStockCodeID', $line->iStockCodeID)
                 ->update(['fQtyToProcess' => $line->fQuantity,'_btblInvoiceLines_dModifiedDate' => Carbon::now()]);
         });
         $lines->update(['status' => SaleOrder::STATUS_ISSUED]);
-        return true;
+        return $lines;
     }
     function getBatchLines($id){
         $batches = InvoiceLine::find($id);

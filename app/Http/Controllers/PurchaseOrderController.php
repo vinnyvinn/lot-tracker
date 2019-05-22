@@ -26,4 +26,10 @@ class PurchaseOrderController extends Controller
   Session::flash('success','Pos imported successfully');
   return redirect('/pos');
     }
+
+    public function show($id)
+    {
+  return view('pos.show')->with('batches',PurchaseOrder::find($id));
+    }
+
 }

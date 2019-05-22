@@ -8,11 +8,12 @@
                 <div class="card-header">PO #: {{$batches->OrderNum}}
                     <br>
                     PO Qty: {{$batches->fQuantity}}
-
+                    @if($batches->status == \App\PurchaseOrder::ARRIVED_PO || \App\PurchaseOrder::PENDING_STATUS)
                     <a href="{{url('batches/'.$id)}}" class="btn btn-info pull-right"><img src="{{asset('assets/img/export.png')}}" alt="" width="25">Import</a>
                     
                     <a href="{{url(url('sample'))}}" class="btn btn-info pull-right mx-2"><img src="{{asset('assets/img/download.png')}}" alt="" width="25">Download Sample</a>
                     <a href="{{url('create-batch/'.$id)}}" class="btn btn-info pull-right mx-2"><i class="fa fa-plus">Add New</i></a>
+                        @endif
                 </div>
                 <div class="card-body">
                     <table class="table table-striped table-bordered pos" style="width:100%">
@@ -35,7 +36,7 @@
                         @foreach($batches->batches as $batch)
                             <tr>
                                 <td>
-                                    @if($batch->status == \App\PurchaseOrder::PENDING_STATUS)
+                                    @if($batches->status == \App\PurchaseOrder::PENDING_STATUS || \App\PurchaseOrder::RECEIVED_STATUS)
                                     <a href="#" title="Modify" class="label label-primary modify" data-toggle="modal" data-target="#modify" modify_id="{{$batch->id}}"><i class="fa fa-edit">{{$batch->po}}</i></a>
                                     @else
                                         {{$batch->po}}
@@ -68,14 +69,14 @@
                             @endif
                         </tbody>
                     </table>
-
+                           @if($batches->status == \App\PurchaseOrder::RECEIVED_STATUS)
                         <div class="row">
                             <div class="col text-center">
                                 <button class="btn btn-primary border border-warning border-4 process_now my-2" post_to="{{$id}}"><img src="{{asset('assets/img/approved.png')}}" class="approve_all"><span class="walla_img">Process</span></button>
                             </div>
                         </div>
-
-                    <!-- The Edit Modal -->
+                @endif
+                <!-- The Edit Modal -->
                     <div class="modal" id="modify">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -167,14 +168,10 @@
                                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                                 </div>
                                 </form>
-
                             </div>
                       </div>
             </div>
-
-
     </div>
-
                     <!-- The Reject Modal -->
                     <div class="modal" id="rejects">
                         <div class="modal-dialog">
@@ -238,19 +235,14 @@
         </div>
     </div>
     </div>
-
 @endsection
-
-
 @section('scripts')
     <script src="{{asset('assets/js/jquery-ui.js')}}"></script>
     <script src="{{asset('assets/js/jquery.dataTables.min.js')}}"></script>
     <script src="{{asset('assets/js/dataTables.bootstrap4.min.js')}}"></script>
     <script>
-
         $('.pos').DataTable()
         $(function () {
-
             var approve_id;
             var reject_id;
             var modify_id;
@@ -375,6 +367,7 @@
             });
             $('.process_now').on('click', function () {
                 var posted = $(this).attr('post_to');
+
                 $.ajax({
                     url: '{{url('check-po-status')}}' + '/' + posted,
                     type: 'GET',
@@ -386,13 +379,32 @@
                         if (response == 'fail') {
                             return toastr.warning('fail', 'You must either Approve or Reject all the batch lines before processing request.')
                         }
+                        if (response =='proceed'){
+                            $.ajax({
+                                url: '{{url('approved-pos')}}' + '/' + posted,
+                                type: 'GET',
+                                success: function (response) {
+                                    if (response.length < 1) {
+                                        toastr.warning('fail', 'Sorry,You must import po batches first.');
+                                        //window.location.reload();
+                                    } else if (response.length > 0) {
+
+                                        toastr.success('success', 'Pos successfully imported.');
+                                        window.location.href = '{{url('/pos')}}';
+                                    } else if (response.qty) {
+                                        toastr.warning('fail', response.qty);
+                                    }
+
+                                }
+                            })
+                        }
                         if (response == 'success') {
                             $.ajax({
                                 url: '{{url('process-pos')}}' + '/' + posted,
                                 type: 'GET',
                                 success: function (response) {
-                                    console.log(response);
-                                    window.location.href = '{{url('/pos')}}';
+                                     console.log(response);
+                                     window.location.href = '{{url('/pos')}}';
                                 }
                             })
                         }

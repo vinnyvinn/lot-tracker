@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Database\Seeder;
-
-class DatabaseSeeder extends Seeder
+use App\Setting;
+class SettingsTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -11,7 +11,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-         $this->call(UserTableSeeder::class);
-         $this->call(SettingsTableSeeder::class);
+        Setting::truncate();
+        Setting::create(['enable_inspection' => 1]);
     }
 }

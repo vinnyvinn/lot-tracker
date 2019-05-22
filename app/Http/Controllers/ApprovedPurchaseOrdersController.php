@@ -6,6 +6,7 @@ use App\ApprovedPurchaseOrder;
 use App\BatchLine;
 use App\PurchaseOrder;
 use App\RejectReason;
+use App\Setting;
 use http\Env\Response;
 use Illuminate\Http\Request;
 use LotTracker\AppprovePurchaseOrders;
@@ -53,7 +54,6 @@ class ApprovedPurchaseOrdersController extends Controller
      */
     public function show($id)
     {
-
         $batches = PurchaseOrder::find($id)->batches;
         if (count($batches) < 1){
         return response()->json($batches);
@@ -61,7 +61,7 @@ class ApprovedPurchaseOrdersController extends Controller
         $qty = AppprovePurchaseOrders::init()->validateQty($id);
 
         if($qty !=PurchaseOrder::find($id)->fQuantity){
-            return response()->json(['qty' => 'Sorry,sum quantities must be equal to PO quantity']);
+           return response()->json(['qty' => 'Sorry,sum quantities must be equal to PO quantity']);
         }
         AppprovePurchaseOrders::init()->storeToSage($id);
         return response()->json($batches);
@@ -75,15 +75,19 @@ class ApprovedPurchaseOrdersController extends Controller
 
     public function poStatus($id)
     {
-        $batches = PurchaseOrder::find($id)->batches;
-          if (count($batches) < 1){
+        $batches = PurchaseOrder::find($id);
+          if (count($batches->batches) < 1){
             return response('nodata');
         }
-        foreach ($batches as $batch){
+        foreach ($batches->batches as $batch){
                if ($batch->status == PurchaseOrder::PENDING_STATUS){
                 return response('fail');
             }
         }
+        if (Setting::first()->enable_inspection == Setting::DISABLE_INSPECTION){
+            return response('proceed');
+        }
+
         return response('success');
 
        }
@@ -120,9 +124,10 @@ class ApprovedPurchaseOrdersController extends Controller
 
     public function newReason()
     {
+
         RejectReason::create(['reason' => request()->get('reason')]);
         Session::flash('success','Reason was successfully added');
-        return redirect('/approved-pos/'.request()->get('id').'/edit');
+        return redirect()->back();
     }
 
     /**

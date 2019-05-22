@@ -43,6 +43,7 @@
                         <a href="{{url('pos')}}" class="btn btn-success" style="margin-left: 80px"><img src="{{asset('assets/img/purchase.png')}}" alt="" width="50px"><span class="menu-i" style="font-weight: 600"> POS</span> </a>
                           <a href="{{url('so')}}" class="btn btn-success"><img src="{{asset('assets/img/po.png')}}" alt="" width="50px"><span class="menu-i" style="font-weight: 600"> Sale Orders</span> </a>
                            <a href="{{url('reports/create')}}" class="btn btn-success"><img src="{{asset('assets/img/report.png')}}" alt="" width="50px"><span class="menu-i" style="font-weight: 600"> Reports</span> </a>
+                   <a href="{{url('settings/create')}}" class="btn btn-success"><img src="{{asset('assets/img/settings.png')}}" alt="" width="50px"><span class="menu-i" style="font-weight: 600"></span> </a>
                     </span>
                         @endauth
                 </div>
@@ -70,12 +71,17 @@
                                    onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();" class="btn btn-info">
                                     <img src="{{asset('assets/img/logout.png')}}" alt="" width="30px">
+
                                 </a>
+
+
 
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                     {{ csrf_field() }}
                                 </form>
                             </li>
+
+
                         @endguest
                     </ul>
                 </div>
