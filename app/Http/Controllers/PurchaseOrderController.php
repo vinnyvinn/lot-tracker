@@ -16,7 +16,10 @@ class PurchaseOrderController extends Controller
     }
     public function index()
     {
+       // dd(session('username'));
         PurchaseOrders::init()->getPOs();
+      //  PurchaseOrders::init()->getPOs();
+        //dd(PurchaseOrder::all());
        return view('pos.index')->with('pos',PurchaseOrder::all());
     }
 

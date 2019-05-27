@@ -23,7 +23,6 @@
         <nav class="navbar navbar-default navbar-static-top" id="themeColor">
             <div class="container">
                 <div class="navbar-header">
-
                     <!-- Collapsed Hamburger -->
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse" aria-expanded="false">
                         <span class="sr-only">Toggle Navigation</span>
@@ -31,17 +30,15 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-
                     <!-- Branding Image -->
                     <a class="navbar-brand logo" href="{{ url('/') }}">
                         {{ config('app.name', 'Laravel') }}
 
-
                     </a>
                     @auth
                     <span>
-                        <a href="{{url('pos')}}" class="btn btn-success" style="margin-left: 80px"><img src="{{asset('assets/img/purchase.png')}}" alt="" width="50px"><span class="menu-i" style="font-weight: 600"> POS</span> </a>
-                          <a href="{{url('so')}}" class="btn btn-success"><img src="{{asset('assets/img/po.png')}}" alt="" width="50px"><span class="menu-i" style="font-weight: 600"> Sale Orders</span> </a>
+                        <a href="{{url('pos')}}" class="btn btn-success" style="margin-left: 80px"><img src="{{asset('assets/img/purchase.png')}}" alt="" width="50px"><span class="menu-i" style="font-weight: 600"> Receive</span> </a>
+                          <a href="{{url('so')}}" class="btn btn-success"><img src="{{asset('assets/img/po.png')}}" alt="" width="50px"><span class="menu-i" style="font-weight: 600"> Issue</span> </a>
                            <a href="{{url('reports/create')}}" class="btn btn-success"><img src="{{asset('assets/img/report.png')}}" alt="" width="50px"><span class="menu-i" style="font-weight: 600"> Reports</span> </a>
                    <a href="{{url('settings/create')}}" class="btn btn-success"><img src="{{asset('assets/img/settings.png')}}" alt="" width="50px"><span class="menu-i" style="font-weight: 600"></span> </a>
                     </span>
@@ -64,7 +61,6 @@
                         @else
 
                             <li>
-
                                 {{--<img src="{{asset('assets/img/exit.png')}}" alt="" width="50px">--}}
 
                                 <a href="{{ route('logout') }}"

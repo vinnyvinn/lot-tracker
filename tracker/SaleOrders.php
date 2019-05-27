@@ -174,6 +174,6 @@ return true;
                     ];
                }
         }
-return collect($batch_data);
+  return collect($batch_data);
     }
 }

@@ -110,6 +110,52 @@ class BatchesController extends Controller
         return redirect('/batches/'.$request->id.'/edit');
     }
 
+    public function storeBalance()
+    {
+        $path = request()->file('import_file')->getRealPath();
+        $data = Excel::load($path)->get();
+        $qty =0;
+        if($data->count()){
+            foreach ($data as $key => $value) {
+                $qty += 1;
+                $arr[] = [
+                    'po' => 'Opening Balance('.date('d/m/Y').')',
+                    'item' => $value->item_code,
+                    'batch' => $value->batch_serial_no,
+                    'qty' => 1,
+                    'expiry_date' => date('d/m/Y'),
+                    'status' => PurchaseOrder::PENDING_STATUS,
+                    'actual_batch' => $value->batch_serial_no,
+                    'actual_qty' => 1,
+                    'actual_expiry' => date('d/m/Y'),
+                    'purchase_order_id' => PurchaseOrder::count()+1,
+                    'auto_index' => PurchaseOrder::orderby('id','desc')->first()->auto_index+1
+                ];
+            }
+
+            if(!empty($arr)){
+
+                Session::flash('success','Items Imported successfully.');
+                BatchLine::insert($arr);
+                PurchaseOrder::create([
+                    'OrderNum' => 'Opening Balance('.date('d/m/Y').')',
+                    'InvDate' => Carbon::now(),
+                    'supplier' => 'SUPP01',
+                    'cDescription' => 'Lot Item 01',
+                    'fQuantity'=> $qty,
+                    'type' => 'LOT',
+                    'auto_index' => PurchaseOrder::orderby('id','desc')->first()->auto_index+1,
+                    'status' => PurchaseOrder::RECEIVED_STATUS
+                    ]);
+
+
+            }
+        }
+
+        Session::flash('success','Items Imported successfully.');
+        return redirect('/pos');
+    }
+
     /**
      * Display the specified resource.
      *
@@ -141,6 +187,7 @@ class BatchesController extends Controller
         elseif ($batches->status == PurchaseOrder::APPROVED_STATUS){
            return view('pos.show')->with('batches',PurchaseOrder::find($id))->with('id',$id);
         }
+        return view('batches.edit')->with('batches',PurchaseOrder::find($id))->with('id',$id);
 
 
     }
@@ -170,7 +217,19 @@ class BatchesController extends Controller
 
         })->download('xls');
     }
+    public function SampleOp()
+    {
+        $sample = BatchesDetails::init()->sampleOp();
+        return Excel::create('sample_po', function ($excel) use ($sample) {
 
+            $excel->sheet('mySheet', function ($sheet) use ($sample) {
+
+                $sheet->fromArray($sample);
+
+            });
+
+        })->download('xls');
+    }
     public function fetchDetails($id)
     {
         $batches = BatchLine::find($id);

@@ -20,9 +20,9 @@ static function init(){
     public function sampleData()
     {
       $data []= [
-            'PO' => 'P001',
-           'ITEM' => 'I-01',
-           'BATCH' => 'B-01',
+           'PO' => 'P001',
+           'ITEM CODE' => 'I-01',
+           'BATCH / SERIAL NO' => 'B-01',
            'QTY' => 50,
            'EXPIRY' => date('d/m/Y')
 
@@ -30,4 +30,14 @@ static function init(){
 
       return collect($data);
 }
+    public function sampleOp()
+    {
+        $data []= [
+            'PO' => 'Opening Balance('.date('d/m/Y').')',
+            'ITEM CODE' => 'I-01',
+            'BATCH / SERIAL NO' => 'B-01'
+        ];
+
+        return collect($data);
+    }
 }

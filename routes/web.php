@@ -21,6 +21,8 @@ Route::resource('batches','BatchesController');
 Route::get('create-batch/{id}','BatchesController@createBatch');
 Route::post('store-batch','BatchesController@storeBatch');
 Route::get('sample','BatchesController@Sample');
+Route::get('sample-op','BatchesController@SampleOp');
+Route::post('store-bal','BatchesController@storeBalance');
 Route::get('fetch-po/{id}','BatchesController@fetchDetails');
 Route::post('update-po/{id}','BatchesController@updatePoDetails');
 Route::resource('approved-pos','ApprovedPurchaseOrdersController');

@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class PurchaseOrder extends Model
 {
-
-protected $connection ='sqlsrv';
+  //  protected $table = 'leads';
+//    protected $connection ='dynamicdb';
 
 const ARRIVED_PO= 'ARRIVED';
 const APPROVED_PO = 'APPROVED';

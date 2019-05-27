@@ -38,6 +38,22 @@
                                 @endif
                             </div>
                         </div>
+                        <div class="form-group{{ $errors->has('warehouse') ? ' has-error' : '' }}">
+                            <label for="warehouse" class="col-md-4 control-label">Warehouse</label>
+
+                            <div class="col-md-6">
+                                <select name="warehouse" id="warehouse" class="form-control" required style="height: 100%">
+                                    <option value="lot_tracker">PRABHAKI</option>
+                                    <option value="mhc">MHC</option>
+                                </select>
+
+                                @if ($errors->has('warehouse'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('warehouse') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
 
                         <div class="form-group">
                             <div class="col-md-6 col-md-offset-4">

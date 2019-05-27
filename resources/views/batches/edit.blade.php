@@ -1,14 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-
     <div class="row">
         <div class="col-md-10 mx-auto">
             <div class="card">
                 <div class="card-header">PO #: {{$batches->OrderNum}}
                     <br>
                     PO Qty: {{$batches->fQuantity}}
-                    @if($batches->status == \App\PurchaseOrder::ARRIVED_PO || \App\PurchaseOrder::PENDING_STATUS)
+                    @if($batches->status == \App\PurchaseOrder::ARRIVED_PO || \App\PurchaseOrder::PENDING_STATUS && !\App\PurchaseOrder::where('id',$id)->where('OrderNum','like','open'.'%')->first())
                     <a href="{{url('batches/'.$id)}}" class="btn btn-info pull-right"><img src="{{asset('assets/img/export.png')}}" alt="" width="25">Import</a>
                     
                     <a href="{{url(url('sample'))}}" class="btn btn-info pull-right mx-2"><img src="{{asset('assets/img/download.png')}}" alt="" width="25">Download Sample</a>
@@ -21,7 +20,7 @@
                         <tr>
                             <th>PO</th>
                             <th>Item</th>
-                            <th>Batch</th>
+                            <th>Batch/Serial</th>
                             <th>Act. Batch</th>
                             <th>Qty</th>
                             <th>Act. Qty</th>
@@ -86,7 +85,6 @@
                                     <h4 class="modal-title">Edit PO Batch</h4>
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                                 </div>
-
                                 <!-- Modal body -->
                                 <div class="modal-body">
                                     <form class="modify_form">

@@ -18,12 +18,12 @@ class CreateBatchLinesTable extends Migration
             $table->string('po');
             $table->string('item');
             $table->string('batch');
-            $table->string('expiry_date');
-            $table->string('qty');
+            $table->string('expiry_date')->deafult(date('d-m-Y'));
+            $table->string('qty')->default(1);
             $table->string('status');
             $table->string('actual_batch');
-            $table->string('actual_qty');
-            $table->string('actual_expiry');
+            $table->string('actual_qty')->nullable()->default(date('d-m-Y'));
+            $table->string('actual_expiry')->nullable()->default(date('d-m-Y'));
             $table->integer('purchase_order_id')->nullable();
             $table->string('description')->nullable();
             $table->string('qty_received')->default(0);

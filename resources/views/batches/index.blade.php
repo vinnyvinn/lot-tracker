@@ -12,7 +12,7 @@
                         <tr>
                             <th>PO</th>
                             <th>Item</th>
-                            <th>Batch</th>
+                            <th>Batch/Serial</th>
                             <th>Qty</th>
                             <th>Expiry</th>
                             <th>Action</th>
