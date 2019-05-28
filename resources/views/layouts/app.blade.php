@@ -33,7 +33,6 @@
                     <!-- Branding Image -->
                     <a class="navbar-brand logo" href="{{ url('/') }}">
                         {{ config('app.name', 'Laravel') }}
-
                     </a>
                     @auth
                     <span>
