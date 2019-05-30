@@ -38,6 +38,7 @@ class CreateInvoiceLinesTable extends Migration
             $table->string('qty_remaining');
             $table->string('state')->default(\App\InvoiceLine::STATE_NOT_RECEIVED);
             $table->text('batch_data')->nullable();
+            $table->string('warehouse')->nullable();
             $table->timestamps();
         });
     }

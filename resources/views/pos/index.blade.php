@@ -68,7 +68,6 @@
     <div class="modal" id="modify">
         <div class="modal-dialog">
             <div class="modal-content">
-
                 <!-- Modal Header -->
                 <div class="modal-header">
                     <h4 class="modal-title">Import Opening Balance</h4>
@@ -79,6 +78,14 @@
                 <div class="modal-body">
                     <form action="{{url('store-bal')}}" method="POST" enctype="multipart/form-data">
                         {{csrf_field()}}
+                        <div class="form-group">
+                            <label for="warehouse">Warehouse</label>
+                            <select name="warehouse" class="form-control warehouse" style="height: 100%" required>
+                                @foreach($wh as $h)
+                                <option value="{{$h->id}}">{{$h->name}}</option>
+                                    @endforeach
+                            </select>
+                        </div>
                         <div class="form-group">
                             <label for="file">Excel File</label>
                             <input type="file" name="import_file" class="form-control" required>
