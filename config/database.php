@@ -79,9 +79,9 @@ return [
         ],
         'sqlsrv2' => [
             'driver' => 'sqlsrv',
-            'host' => env('DB_HOST_2', '127.0.0.1'),
+            'host' => env('DB_HOST_2', '192.168.1.14\SQLEXPRESS'),
             'port' => env('DB_PORT_2', '1433'),
-            'database' => env('DB_DATABASE_2', 'DEMO'),
+            'database' => env('DB_DATABASE_2', 'MARTNETWORKS'),
             'username' => env('DB_USERNAME_2', 'sa'),
             'password' => env('DB_PASSWORD_2', 'Qwerty123!'),
             'charset' => 'utf8',
