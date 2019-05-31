@@ -155,11 +155,8 @@ class BatchesController extends Controller
                     'auto_index' => PurchaseOrder::orderby('id','desc')->first()->auto_index+1,
                     'status' => PurchaseOrder::RECEIVED_STATUS
                     ]);
-
-
             }
         }
-
         Session::flash('success','Items Imported successfully.');
         return redirect('/pos');
     }
