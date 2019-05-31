@@ -20,7 +20,7 @@ class CreatePurchaseOrdersTable extends Migration
             $table->string('supplier');
             $table->string('cDescription');
             $table->string('fQuantity');
-            $table->string('type');
+            $table->string('type')->default('NEW')->nullable();
             $table->integer('auto_index');
             $table->string('status');
             $table->string('state')->default(0);

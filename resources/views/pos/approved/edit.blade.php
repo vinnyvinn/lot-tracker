@@ -3,9 +3,8 @@
 @section('content')
 
     <div class="row">
-        <div class="col-md-12 mx-auto">
             <div class="card">
-                <div class="card-header">PO Batches
+                <div class="card-header">PO Batchespp
 
 {{--                @if($batches->status != \App\PurchaseOrder::APPROVED_STATUS || $batches->status != \App\PurchaseOrder::PROCESSED_STATUS)--}}
                     <a href="{{url('batches/'.$id)}}" class="btn btn-info pull-right"><img src="{{asset('assets/img/export.png')}}" alt="" width="25">Import</a>
@@ -13,7 +12,7 @@
 {{--               @endif--}}
                 </div>
                 <div class="card-body">
-                    <table class="table table-striped table-bordered pos" style="width:100%">
+                    <table class="table table-striped table-bordered pos">
                         <thead>
                         <tr>
                             <th>PO</th>

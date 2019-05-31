@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use App\Warehouse;
-class WareHouseSeeder extends Seeder
+class WarehouseTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -11,7 +11,7 @@ class WareHouseSeeder extends Seeder
      */
     public function run()
     {
-        Warehouse::truncate();
+         Warehouse::truncate();
 
         Warehouse::create([
             'name' => 'Master'
