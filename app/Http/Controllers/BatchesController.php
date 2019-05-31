@@ -126,7 +126,7 @@ class BatchesController extends Controller
             foreach ($data as $key => $value) {
                 $qty += 1;
                 $arr[] = [
-                    'po' => 'Opening Balance('.date('d/m/Y').')',
+                    'po' => 'Opening Balance('.date('d/m/Y H:i:s').')',
                     'item' => $value->item_code,
                     'batch' => $value->batch_serial_no,
                     'qty' => 1,
@@ -142,11 +142,11 @@ class BatchesController extends Controller
             }
 
             if(!empty($arr)){
-
+             //dd($arr);
                 Session::flash('success','Items Imported successfully.');
                 BatchLine::insert($arr);
                 PurchaseOrder::create([
-                    'OrderNum' => 'Opening Balance('.date('d/m/Y').')',
+                    'OrderNum' => 'Opening Balance('.date('d/m/Y H:i:s').')',
                     'InvDate' => Carbon::now(),
                     'supplier' => 'SUPP01',
                     'cDescription' => 'Lot Item 01',
