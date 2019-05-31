@@ -22,6 +22,7 @@ class CreateApprovedPurchaseOrdersTable extends Migration
             $table->string('qty');
             $table->string('status');
             $table->boolean('posted')->default(0);
+            $table->string('warehouse')->nullable();
             $table->timestamps();
         });
     }

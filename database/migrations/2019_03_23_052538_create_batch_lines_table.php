@@ -32,6 +32,7 @@ class CreateBatchLinesTable extends Migration
             $table->string('qc_done')->default(0);
             $table->string('qty_accepted')->default(0);
             $table->integer('auto_index');
+            $table->string('warehouse')->nullable()->default('1');
             $table->timestamps();
         });
     }

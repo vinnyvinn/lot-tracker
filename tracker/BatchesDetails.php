@@ -33,7 +33,7 @@ static function init(){
     public function sampleOp()
     {
         $data []= [
-            'PO' => 'Opening Balance('.date('d/m/Y').')',
+            'PO' => 'Opening Balance('.date('d/m/Y H:i:s').')',
             'ITEM CODE' => 'I-01',
             'BATCH / SERIAL NO' => 'B-01'
         ];

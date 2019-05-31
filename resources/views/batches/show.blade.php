@@ -12,6 +12,14 @@
 
                         <form style="border: 4px solid #a1a1a1;margin-top: 15px;padding: 10px;" action="{{route('batches.store')}}" class="form-horizontal" method="post" enctype="multipart/form-data">
                             {{csrf_field()}}
+                            <div class="form-group" style="margin-left: 1px;margin-right: 1px">
+                                <label for="warehouse">Warehouse</label>
+                                <select name="warehouse" class="form-control warehouse" style="height: 100%;">
+                                    @foreach($wh as $h)
+                                        <option value="{{$h->id}}">{{$h->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                             @if ($errors->any())
                                 <div class="alert alert-danger">
                                     <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
@@ -32,7 +40,7 @@
 
                             <input type="file" name="import_file" required/>
                             <input type="hidden" name="id" value="{{$id}}">
-                            <button class="btn btn-primary btn-outline my-2">Import File</button>
+                            <button class="btn btn-primary btn-outline my-2">Submit</button>
                         </form>
                     </div>
                 </div>

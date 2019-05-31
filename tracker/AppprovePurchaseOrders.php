@@ -31,7 +31,8 @@ static function init(){
                'batch' => $batch->batch,
                'expiry_date' => $batch->expiry_date,
                'qty' => $batch->qty,
-               'status' => $batch->status
+               'status' => $batch->status,
+               'warehouse' => $batch->warehouse
            ]);
         });
 
