@@ -11,6 +11,7 @@ namespace LotTracker;
 
 use App\ApprovedPurchaseOrder;
 use App\PurchaseOrder;
+use App\Warehouse;
 use Session;
 
 class AppprovePurchaseOrders
@@ -21,6 +22,7 @@ static function init(){
 
     public function storeToSage($id)
     {
+  //dd(PurchaseOrder::find($id)->batches);
 
         $batches = PurchaseOrder::find($id)->batches;
             PurchaseOrder::find($id)->update(['status' =>PurchaseOrder::APPROVED_PO,'state' => PurchaseOrder::POSTED_TO_SAGE]);
@@ -32,10 +34,10 @@ static function init(){
                'expiry_date' => $batch->expiry_date,
                'qty' => $batch->qty,
                'status' => $batch->status,
-               'warehouse' => $batch->warehouse
+               'warehouse' => Warehouse::find($batch->warehouse)->code
            ]);
         });
-
+return true;
 
 }
 

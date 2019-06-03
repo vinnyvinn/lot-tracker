@@ -54,16 +54,29 @@ class ApprovedPurchaseOrdersController extends Controller
      */
     public function show($id)
     {
+
         $batches = PurchaseOrder::find($id)->batches;
+
         if (count($batches) < 1){
+
         return response()->json($batches);
         }
         $qty = AppprovePurchaseOrders::init()->validateQty($id);
 
         if($qty !=PurchaseOrder::find($id)->fQuantity){
+
            return response()->json(['qty' => 'Sorry,sum quantities must be equal to PO quantity']);
         }
-        AppprovePurchaseOrders::init()->storeToSage($id);
+
+       if (Setting::first()->enable_inspection == Setting::ENABLE_INSPECTION){
+           foreach ($batches as $batch){
+                if ($batch->qc_done == 0){
+                   return response('fail');
+               }
+           }
+       }
+
+      AppprovePurchaseOrders::init()->storeToSage($id);
         return response()->json($batches);
        }
 

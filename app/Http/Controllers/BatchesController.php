@@ -186,9 +186,11 @@ class BatchesController extends Controller
             return view('batches.edit')->with('batches',PurchaseOrder::find($id))->with('id',$id);
         }
         elseif ($batches->status == PurchaseOrder::PROCESSED_STATUS){
+
             return view('pos.approved.edit')->with('batches',PurchaseOrder::find($id))->with('id',$id)->with('reasons',RejectReason::all());
         }
         elseif ($batches->status == PurchaseOrder::APPROVED_STATUS){
+
            return view('pos.show')->with('batches',PurchaseOrder::find($id))->with('id',$id);
         }
         return view('batches.edit')->with('batches',PurchaseOrder::find($id))->with('id',$id);

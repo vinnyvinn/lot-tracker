@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-
     <div class="row">
         <div class="col-md-10 mx-auto">
             <div class="card">
@@ -58,7 +57,7 @@
                         @endforeach
                         </tbody>
                     </table>
-                    @if($inv_lines->status == \App\SaleOrder::STATUS_NOT_ISSUED)
+                    @if($inv_lines->status == \App\SaleOrder::STATUS_NOT_ISSUED && count($inv_lines->lines) > 1)
                     <div class="row">
                         <div class="col text-center">
                             <button class="btn btn-primary border border-warning border-4 process_now my-2" post_to="{{$inv_lines->id}}"><img src="{{asset('assets/img/approved.png')}}" class="approve_all"><span class="walla_img">Process</span></button>

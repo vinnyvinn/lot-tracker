@@ -11,7 +11,11 @@
                         {{method_field('PUT')}}
                         <div class="form-group">
                             <label for="name">Name</label>
-                            <input type="text" name="name" class="form-control" value="{{$wh->name}}">
+                            <input type="text" name="name" class="form-control" value="{{$wh->name}}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="code">Code</label>
+                            <input type="text" name="code" class="form-control" value="{{$wh->code}}" required>
                         </div>
                         <center>
                             <input type="submit" class="btn btn-primary" value="Update">

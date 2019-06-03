@@ -10,7 +10,11 @@
                        {{csrf_field()}}
                         <div class="form-group">
                             <label for="name">Name</label>
-                            <input type="text" name="name" class="form-control">
+                            <input type="text" name="name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="code">Code</label>
+                            <input type="text" name="code" class="form-control" required>
                         </div>
                        <center>
                            <input type="submit" class="btn btn-primary" value="Save">

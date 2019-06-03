@@ -308,13 +308,16 @@
                             type:'GET',
                             success: function (response) {
                                 if(response.length < 1){
-                                    toastr.warning('fail','Sorry,You must import po batches first.');
-                                    //window.location.reload();
+                                    return toastr.warning('fail','Sorry,You must import po batches first.');
+
+                                }
+                                if(response == 'fail'){
+                                    return toastr.warning('fail','Sorry,You must perform the QC for all the batches before proceeding.');
                                 }
                                 else if(response.length > 0)
                                 {
 
-                                    toastr.success('success','Pos successfully imported.');
+                                    toastr.success('success','Pos successfully approved.');
                                     window.location.href='{{url('/pos')}}';
                                 }
                                 else if(response.qty){

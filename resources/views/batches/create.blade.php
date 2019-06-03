@@ -24,10 +24,10 @@
                                 </tr>
                                 <tr>
                                     <td><input type="text" name="addmore[0][po]" value="{{$po->OrderNum}}" class="form-control" disabled/></td>
-                                    <td><input type="text" name="addmore[0][item]" placeholder="Enter Item" class="form-control" /></td>
-                                    <td><input type="text" name="addmore[0][batch]" placeholder="Enter Batch" class="form-control" /></td>
-                                    <td><input type="number" name="addmore[0][qty]" placeholder="Enter Qty" class="form-control" /></td>
-                                    <td><input type="text" name="addmore[0][expiry]" placeholder="Enter Expiry" class="form-control datep" /></td>
+                                    <td><input type="text" name="addmore[0][item]" placeholder="Enter Item" class="form-control" required/></td>
+                                    <td><input type="text" name="addmore[0][batch]" placeholder="Enter Batch" class="form-control" required/></td>
+                                    <td><input type="number" name="addmore[0][qty]" placeholder="Enter Qty" class="form-control" required/></td>
+                                    <td><input type="text" name="addmore[0][expiry]" placeholder="Enter Expiry" class="form-control datep" required/></td>
                                     <td><button type="button" name="add" id="add" class="btn btn-success">Add More</button></td>
 
                                 </tr>
@@ -58,7 +58,7 @@
        var po = $('#p_o').val();
         $("#add").click(function(){
              ++i;
-            $("#dynamicTable").append('<tr><td><input type="text" name="addmore['+i+'][po]" value="'+po+'" class="form-control" disabled/></td><td><input type="text" name="addmore['+i+'][item]" placeholder="Enter Item" class="form-control" /></td><td><input type="text" name="addmore['+i+'][batch]" placeholder="Enter Batch" class="form-control" /></td><td><input type="number" name="addmore['+i+'][qty]" placeholder="Enter Qty" class="form-control" /></td><td><input type="text" name="addmore['+i+'][expiry]" placeholder="Enter Expiry" class="form-control date_p" /></td><td><button type="button" class="btn btn-danger remove-tr">Remove</button></td></tr>');
+            $("#dynamicTable").append('<tr><td><input type="text" name="addmore['+i+'][po]" value="'+po+'" class="form-control" disabled/></td><td><input type="text" name="addmore['+i+'][item]" placeholder="Enter Item" class="form-control" required/></td><td><input type="text" name="addmore['+i+'][batch]" placeholder="Enter Batch" class="form-control" required/></td><td><input type="number" name="addmore['+i+'][qty]" placeholder="Enter Qty" class="form-control" required/></td><td><input type="text" name="addmore['+i+'][expiry]" placeholder="Enter Expiry" class="form-control date_p" required/></td><td><button type="button" class="btn btn-danger remove-tr">Remove</button></td></tr>');
         });
         $(document).on('click', '.remove-tr', function(){
             $(this).parents('tr').remove();

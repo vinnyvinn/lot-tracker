@@ -5,7 +5,8 @@
             <div class="card">
                 <div class="card-header">Warehouses
                    <span class="pull-right">
-                    <a href="{{route('wh.create')}}" class="btn btn-info pull-right"> <i class="fa fa-plus">Add New</i></a>
+                    <a href="{{route('wh.create')}}" class="btn btn-info pull-right" style="margin-left: 5px;"> <i class="fa fa-plus">Add New</i></a>
+                       <a href="{{url('import-wh')}}" class="btn btn-info pull-right"> <i class="fa fa-download" >Import Warehouse</i></a>
                   </span>
                 </div>
                 <div class="card-body">
@@ -14,6 +15,7 @@
                         <tr>
                             <th>#</th>
                             <th>Name</th>
+                            <th>Code</th>
                             <th>Action</th>
                         </tr>
                         </thead>
@@ -22,6 +24,7 @@
                                 <tr>
                                 <td>{{$h->id}}</td>
                                 <td>{{$h->name}}</td>
+                                    <td>{{$h->code}}</td>
                                 <td>
                                     <a href="{{url('wh/'.$h->id.'/edit')}}" class="btn btn-success btn-xs pull-right" style="margin: 2px"><i class="fa fa-edit">Edit</i></a>
                                    @if($h->id !=1)

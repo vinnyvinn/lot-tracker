@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\BatchLine;
 use App\PurchaseOrder;
-
+use Carbon\Carbon;
 use App\Warehouse;
 use Illuminate\Http\Request;
 use LotTracker\PurchaseOrders;
@@ -71,5 +71,49 @@ class PurchaseOrderController extends Controller
     {
         $wh = Warehouse::where('id','!=',$id)->get();
        return response()->json($wh);
+}
+
+    public function addSerials()
+    {
+      return view('pos.create')->with('wh',Warehouse::all());
+}
+
+    public function newSerials()
+    {
+
+        $data = request()->get('addmore');
+        $po = 'Opening Balance('.date('d/m/Y H:i:s').')';
+        $i=0;
+          foreach ($data as $b){
+            $i++;
+            BatchLine::create([
+                'po' => $po,
+                'item' => $b['item'],
+                'qty'=>1,
+                'batch' => $b['batch'],
+                'expiry_date'=> date('d/m/Y'),
+                'status' => PurchaseOrder::PENDING_STATUS,
+                'actual_batch'=> $b['batch'],
+                'actual_qty' => 1,
+                'actual_expiry' =>date('d/m/Y'),
+                'purchase_order_id' => PurchaseOrder::count()+1,
+                'auto_index' => PurchaseOrder::orderby('id','desc')->first()->auto_index+1,
+                'warehouse' => request()->get('warehouse')
+            ]);
+        }
+
+        PurchaseOrder::create([
+            'OrderNum' => $po,
+            'InvDate' => Carbon::now(),
+            'supplier' => 'SUPP01',
+            'cDescription' => 'Lot Item 01',
+            'fQuantity'=> $i,
+            'type' => 'LOT',
+            'auto_index' => PurchaseOrder::orderby('id','desc')->first()->auto_index+1,
+            'status' => PurchaseOrder::RECEIVED_STATUS
+        ]);
+
+        Session::flash('success','Item Serials Imported successfully.');
+        return redirect('/pos');
 }
 }

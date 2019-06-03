@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Warehouse;
+use App\WarehouseMaster;
 use Illuminate\Http\Request;
+
 use Session;
 class WareHouseController extends Controller
 {
@@ -74,6 +76,13 @@ class WareHouseController extends Controller
         Warehouse::find($id)->update($request->all());
         Session::flash('success','Warehouse successfully updated.');
         return redirect('wh');
+    }
+
+    public function importWh()
+    {
+     \LotTracker\Warehouse::wh()->getWh();
+     Session::flash('success','Warehouse successfully imported.');
+     return redirect()->back();
     }
 
     /**

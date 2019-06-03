@@ -12,9 +12,9 @@ class WarehouseTableSeeder extends Seeder
     public function run()
     {
          Warehouse::truncate();
-
         Warehouse::create([
-            'name' => 'Master'
+            'name' => 'Master',
+            'code' => 'Master'
         ]);
     }
 }

@@ -29,7 +29,7 @@ class SaleOrders
             ->where('Doctype', 4)
             ->where('DocState','<>',4)
             ->orWhereIn('StkItem.ulIIItemType',['LOT','SERIAL'])
-            ->select('Invnum.AutoIndex', 'Invnum.OrderNum', 'Invnum.InvDate', 'Client.Name', '_btblInvoiceLines.cDescription', '_btblInvoiceLines.fQuantity','StkItem.ulIIItemType','StkItem.Code')
+            ->select('Invnum.AutoIndex', 'Invnum.OrderNum', 'Invnum.InvDate','Client.Name', '_btblInvoiceLines.cDescription','_btblInvoiceLines.iWarehouseID', '_btblInvoiceLines.fQuantity','StkItem.ulIIItemType','StkItem.Code')
             ->get();
 
       self::checkInvoices($sales);
@@ -75,7 +75,7 @@ class SaleOrders
                 'cDescription' => $inv->cDescription,
                 'fQuantity' => $inv->fQuantity,
                 'status' => SaleOrder::STATUS_NOT_ISSUED,
-                'type' => $inv->ulIIItemType,
+                'type' => $inv->ulIIItemType ? $inv->ulIIItemType :'Not Set',
                 'item' => $inv->Code
 
             ]);
