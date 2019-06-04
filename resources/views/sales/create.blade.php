@@ -14,13 +14,16 @@
                             <th>Date</th>
                             <th>Account Name</th>
                             <th>Item</th>
-                            <th>Qty</th>
                             <th>Description</th>
-                            <th>Status</th>
-                            <th>Qty Accepted</th>
+                            <th>Qty</th>
+                           <th>Qty Accepted</th>
                             <th>Qty Rejected</th>
+                            <th>Status</th>
                             <th>Reason</th>
                             <th>QC done</th>
+                            <span class="pull-right" style="margin-top: 15px;margin-right: 5px;">
+                                <a href="#" class="btn btn-primary btn-xs confirmInspect" app_all="{{$inv_lines->id}}"><i class="fa fa-check-circle"></i>Inspect All</a>
+                            </span>
 
 
                         </tr>
@@ -38,21 +41,22 @@
                                 <td>{{ \Carbon\Carbon::parse($so->InvDate)->format('d/m/Y')}}</td>
                                 <td>{{$so->cAccountName}}</td>
                                 <td>{{$so->item}}</td>
-                                <td>{{$so->fQuantity}}</td>
                                 <td>
-                                   {{$so->cDescription}}
+                                    {{$so->cDescription}}
                                 </td>
+                                <td>{{$so->fQuantity}}</td>
+
+                                <td>{{$so->qty_accepted}}</td>
+                                <td>{{$so->qty_rejected}}</td>
                                 <td>
                                     @if($so->status== \App\InvoiceLine::STATUS_PENDING)
-                                       <span class="label label-info">{{$so->status}}</span>
+                                        <span class="label label-info">{{$so->status}}</span>
                                     @elseif($so->status== \App\InvoiceLine::STATUS_REJECTED)
                                         <span class="label label-warning">{{$so->status}}</span>
                                     @else
                                         <span class="label label-success">{{$so->status}}</span>
                                     @endif
                                 </td>
-                                <td>{{$so->qty_accepted}}</td>
-                                <td>{{$so->qty_rejected}}</td>
                                 <td>{{$so->reject_reason}}</td>
                                 <td>
                                      <span class="checkbo">
@@ -206,6 +210,20 @@
         $('.so').DataTable()
         $(function () {
             var inspect_id;
+
+            $('.confirmInspect').on('click',function () {
+                if (confirm("Are you sure you want to Inspect All")) {
+                    $.ajax({
+                        url:'{{url('inspect-all-so')}}'+'/'+$(this).attr('app_all'),
+                        type:'GET',
+                        success: function (response) {
+                            console.log(response);
+                            window.location.reload();
+                        }
+                    })
+                }
+
+            })
             $('.inspect').on('click',function () {
                 //alert('cool');
                 inspect_id = $(this).attr('inspect_id');

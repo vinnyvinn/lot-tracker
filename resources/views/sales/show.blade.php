@@ -13,12 +13,15 @@
                             <th>Date</th>
                             <th>Account Name</th>
                             <th>Item</th>
-                            <th>Qty</th>
-                            <th>Qty Received</th>
-                            <th>Qty Remaining</th>
                             <th>Description</th>
+                            <th>Qty</th>
+                            <th>Qty Issued</th>
+                            <th>Qty Remaining</th>
                             <th>Status</th>
                             <th>Action</th>
+                            <span class="pull-right" style="margin-top: 15px;margin-right: 5px;">
+                                <a href="#" class="btn btn-primary btn-xs confirmApprove" app_all="{{$inv_lines->id}}"><i class="fa fa-check-circle"></i>Approve All</a>
+                            </span>
                         </tr>
                         </thead>
                         <tbody>
@@ -30,12 +33,13 @@
                                 <td>{{ \Carbon\Carbon::parse($so->InvDate)->format('d/m/Y')}}</td>
                                 <td>{{$so->cAccountName}}</td>
                                 <td>{{$so->item}}</td>
+                                <td>
+                                    {{$so->cDescription}}
+                                </td>
                                 <td>{{$so->fQuantity}}</td>
                                 <td>{{$so->qty_received}}</td>
                                 <td>{{$so->qty_remaining}}</td>
-                                <td>
-                                {{$so->cDescription}}
-                                </td>
+
                                 <td>
                                     @if($so->status== \App\InvoiceLine::STATUS_PENDING)
                                         <span class="label label-info">{{$so->status}}</span>
@@ -57,13 +61,13 @@
                         @endforeach
                         </tbody>
                     </table>
-                    @if($inv_lines->status == \App\SaleOrder::STATUS_NOT_ISSUED && count($inv_lines->lines) > 1)
+{{--                    @if($inv_lines->status == \App\SaleOrder::STATUS_NOT_ISSUED && count($inv_lines->lines) > 1)--}}
                     <div class="row">
                         <div class="col text-center">
                             <button class="btn btn-primary border border-warning border-4 process_now my-2" post_to="{{$inv_lines->id}}"><img src="{{asset('assets/img/approved.png')}}" class="approve_all"><span class="walla_img">Process</span></button>
                         </div>
                     </div>
-                @endif
+{{--                @endif--}}
 
                 <!-- The Approve Modal -->
                     <div class="modal" id="modify">
@@ -106,7 +110,7 @@
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label for="lot_number">Lot Number</label>
-                                                <select name="lot_number" id="lot_number" class="form-control" required style="height: 100%">
+                                                <select name="lot_number[]" id="lot_number" class="form-control lot_number" required style="height: 100%;width: 100%" multiple>
                                                     <option></option>
                                                 </select>
                                             </div>
@@ -236,6 +240,7 @@
     <script>
         $('.so').DataTable()
         $(function () {
+            $('.lot_number').select2();
             var approve_id;
             var reject_id;
             var modify_id;
@@ -261,12 +266,18 @@
                                 var option = "<option value='" + id + "'>" + batch + "</option>";
                                 $("#lot_number").append(option);
                             }
+
                             $('#lot_number').on('change',function () {
+                                //console.log($(this).val());
                                $.ajax({
-                                   url:'{{url('lot-qty')}}'+'/'+$(this).val(),
+                                   url:'{{url('lot-qty')}}' +'/'+modify_id,
                                    type:'GET',
+                                   data:{ids:$(this).val()},
                                    success: function (response) {
                                        console.log(response);
+                                       if (response == 'fail'){
+                                           return toastr.warning('fail','Sorry,Quantity Issued Cannot be greater than than the Qty to Process.')
+                                       }
                                        $('.qty_e').val(response);
                                    }
                                })
@@ -276,6 +287,21 @@
                     }
                 });
             })
+
+            $('.confirmApprove').on('click',function () {
+                if (confirm("Are you sure you want to Approve All")) {
+                    $.ajax({
+                        url:'{{url('approve-all-so')}}'+'/'+$(this).attr('app_all'),
+                        type:'GET',
+                        success: function (response) {
+                            console.log(response);
+                            window.location.reload();
+                        }
+                    })
+                }
+
+            })
+
             $('.approval').on('click',function () {
                 //alert('cool');
                 approve_id = $(this).attr('approve_id');
@@ -375,7 +401,7 @@
                         if(response=='fail'){
                             return toastr.warning('fail','Sorry,You have not either approved/rejected all the invoice lines.')
                         }
-                        window.location.reload();
+                        window.location.href='{{url('/so')}}';
                     }
                 })
             })

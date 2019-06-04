@@ -17,13 +17,12 @@ class CreateSaleOrdersTable extends Migration
             $table->increments('id');
             $table->string('OrderNum');
             $table->string('InvDate');
-            $table->string('client');
-            $table->string('cDescription');
-            $table->string('fQuantity');
-            $table->string('type');
+            $table->string('cAccountName');
+            $table->string('OrdTotExcl');
+            $table->string('OrdTotIncl');
+            $table->string('OrdTotTax');
             $table->integer('auto_index');
             $table->string('status');
-            $table->string('item');
             $table->timestamps();
         });
     }

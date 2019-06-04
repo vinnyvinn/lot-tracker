@@ -116,4 +116,55 @@ class PurchaseOrderController extends Controller
         Session::flash('success','Item Serials Imported successfully.');
         return redirect('/pos');
 }
+    public function moreSerials()
+    {
+
+     $serials = $this->comma_separated_to_array(request()->get('all_serials'));
+        $po = 'Opening Balance('.date('d/m/Y H:i:s').')';
+        $i=0;
+     foreach ($serials as $s){
+         $i++;
+         BatchLine::create([
+             'po' => $po,
+             'item' => request()->get('item'),
+             'qty'=>1,
+             'batch' => $s,
+             'expiry_date'=> date('d/m/Y'),
+             'status' => PurchaseOrder::PENDING_STATUS,
+             'actual_batch'=> $s,
+             'actual_qty' => 1,
+             'actual_expiry' =>date('d/m/Y'),
+             'purchase_order_id' => PurchaseOrder::count()+1,
+             'auto_index' => PurchaseOrder::orderby('id','desc')->first()->auto_index+1,
+             'warehouse' => request()->get('warehouse')
+         ]);
+     }
+
+        PurchaseOrder::create([
+            'OrderNum' => $po,
+            'InvDate' => Carbon::now(),
+            'supplier' => 'SUPP01',
+            'cDescription' => 'Lot Item 01',
+            'fQuantity'=> $i,
+            'type' => 'LOT',
+            'auto_index' => PurchaseOrder::orderby('id','desc')->first()->auto_index+1,
+            'status' => PurchaseOrder::RECEIVED_STATUS
+        ]);
+
+        Session::flash('success','Item Serials Imported successfully.');
+        return redirect('/pos');
+    }
+    function comma_separated_to_array($string, $separator = ',')
+    {
+        //Explode on comma
+        $vals = explode($separator, $string);
+
+        //Trim whitespace
+        foreach($vals as $key => $val) {
+            $vals[$key] = trim($val);
+        }
+        //Return empty array if no items found
+        //http://php.net/manual/en/function.explode.php#114273
+        return array_diff($vals, array(""));
+    }
 }

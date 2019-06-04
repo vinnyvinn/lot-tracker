@@ -28,6 +28,12 @@
                             <th>Act. Expiry</th>
                             <td>Status</td>
                             <th>Action</th>
+                            @if(count($batches->batches))
+                            <span class="pull-right" style="margin-top: 15px;margin-right: 5px;">
+                                <a href="#" class="btn btn-primary btn-xs confirmApprove" app_all="{{$id}}"><i class="fa fa-check-circle"></i>Approve All</a>
+                            </span>
+                                @endif
+
                         </tr>
                         </thead>
                         <tbody>
@@ -63,6 +69,7 @@
                                     <i class="fa fa-times rejected mx-3" title="Reject" data-toggle="modal" data-target="#rejects" reject_id="{{$batch->id}}" style="font-size: 20px"></i>
                                 @endif
                                 </td>
+
                             </tr>
                         @endforeach
                             @endif
@@ -245,10 +252,9 @@
             var reject_id;
             var modify_id;
             $('#actual_expiry').datepicker();
-            $('.modify').on('click', function () {
+            $('.pos').on('click','.modify', function () {
                 //alert('cool');
                 modify_id = $(this).attr('modify_id');
-
                 $.ajax({
                     url: '{{url('fetch-po')}}' + '/' + modify_id,
                     type: 'GET',
@@ -263,10 +269,28 @@
 
             })
 
-            $('.approval').on('click', function () {
+            $('.confirmApprove').on('click',function () {
+                if (confirm("Are you sure you want to Approve All")) {
+                   $.ajax({
+                       url:'{{url('approve-all-pos')}}'+'/'+$(this).attr('app_all'),
+                       type:'GET',
+                       success: function (response) {
+                           console.log(response);
+                           window.location.reload();
+                       }
+                   })
+                }
+
+            })
+
+
+
+            $('.pos').on('click','.approval', function () {
                 //alert('cool');
                 approve_id = $(this).attr('approve_id');
-
+        console.log('walla')
+                console.log(approve_id)
+                console.log('-----------')
                 $.ajax({
                     url: '{{url('fetch-po')}}' + '/' + approve_id,
                     type: 'GET',
@@ -281,7 +305,7 @@
 
             })
 
-            $('.rejected').on('click', function () {
+            $('.pos').on('click','.rejected', function () {
                 reject_id = $(this).attr('reject_id');
 
                 $.ajax({

@@ -22,6 +22,8 @@ class CreateInvoiceLinesTable extends Migration
             $table->integer('auto_index');
             $table->string('status');
             $table->string('item');
+            $table->string('type');
+            $table->string('client');
             $table->string('idInvoiceLines');
             $table->string('GrvNumber')->nullable();
             $table->string('cAccountName');

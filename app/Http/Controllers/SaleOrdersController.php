@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\BatchLine;
 use App\BtblInvoiceLines;
+use App\Invnum;
 use App\InvoiceLine;
 use App\RejectReason;
 use App\SaleOrder;
@@ -22,7 +23,9 @@ class SaleOrdersController extends Controller
      */
     public function index()
     {
-        SaleOrders::sales()->getAll();
+
+       SaleOrders::sales()->getAll();
+
         return view('sales.index')->with('sales', SaleOrder::all());
     }
 
@@ -33,8 +36,7 @@ class SaleOrdersController extends Controller
      */
     public function create($id)
     {
-
-        return view('sales.show_batches')->with('batches',SaleOrders::sales()->getBatchLines($id));
+     return view('sales.show_batches')->with('batches',SaleOrders::sales()->getBatchLines($id));
     }
 
     /**
@@ -46,7 +48,7 @@ class SaleOrdersController extends Controller
     public function store(Request $request)
     {
 
-     dd(Reports::init()->checkType($request->all()));
+     Reports::init()->checkType($request->all());
     }
 
     /**
@@ -57,6 +59,8 @@ class SaleOrdersController extends Controller
      */
     public function show($id)
     {
+
+
         if(SaleOrder::find($id)->status== SaleOrder::STATUS_NOT_ISSUED){
          return view('sales.show')->with('inv_lines',SaleOrder::find($id));
         }
@@ -95,17 +99,16 @@ class SaleOrdersController extends Controller
         $b_ids = [];
         if ($inv->batch_data){
           foreach (json_decode($inv->batch_data) as $bt){
-              $b_ids[] = $bt->lot_number;
+             $b_ids[] = $bt->lot_number;
           }
             foreach ($inv->batch_lines as $b){
-                if(!in_array($b->id,$b_ids)){
+                if(!in_array($b->id,collect($b_ids)->flatten()->toArray())){
                     $batches[] = $b;
                 }
             }
         }
-       return response()->json(['lines' => $inv,'batches' => $batches ? $batches :$inv->batch_lines]);
+        return response()->json(['lines' => $inv,'batches' => $batches ? $batches :$inv->batch_lines]);
     }
-
     public function updateSo(Request $request, $id)
     {
 
@@ -115,12 +118,22 @@ class SaleOrdersController extends Controller
 
     public function lotQty($id)
     {
-        $qty = BatchLine::find($id)->actual_qty;
-        return response()->json($qty);
+  $qty =0;
+  foreach (request()->get('ids') as $idd){
+      $qty += BatchLine::find($idd)->actual_qty;
+  }
+
+   $inv = InvoiceLine::find($id);
+  if (($inv->qty_remaining -$qty) < 0 ){
+      return response('fail');
+  }
+
+       return response()->json($qty);
 }
 
     public function updateInvLines()
     {
+
         $inv =InvoiceLine::find(request()->get('id'));
         $my_data= [];
         $clean_data =[];
@@ -130,7 +143,7 @@ class SaleOrdersController extends Controller
        $batch_data[] = [
             'lot_number' => request()->get('lot_number'),
             'qty' => request()->get('fQuantity'),
-            'name' => BatchLine::find(request()->get('lot_number'))->actual_batch
+           // 'name' => BatchLine::whereIn('id',request()->get('lot_number'))->actual_batch
         ];
        array_push($my_data,json_encode($batch_data));
 
@@ -140,10 +153,15 @@ foreach (json_decode(collect($my_data)) as $d){
              $clean_data[] =[
             'lot_number' => $value->lot_number,
             'qty' => $value->qty,
-            'name' => $value->name
+            //'name' => $value->name
         ];
     }
     }
+if (($inv->qty_remaining-request()->get('fQuantity')) < 0 ){
+    session::flash('success','Sorry,Quantity Issued cannot be more than than the available Qty.');
+    return redirect()->back();
+}
+
         $inv->update([
             'batch_data' => json_encode($clean_data),
             'qty_remaining' => $inv->qty_remaining-request()->get('fQuantity'),
@@ -203,7 +221,33 @@ foreach (json_decode(collect($my_data)) as $d){
    return redirect('/so');
     }
 
+    public function approveAll($id)
+    {
 
+        $saleso = SaleOrder::find($id);
+
+        foreach ($saleso->lines as $so){
+
+            InvoiceLine::find($so->id)->update(['status' => InvoiceLine::STATUS_APPROVED]);
+        }
+        return response('success');
+    }
+
+    public function inspectAll($id)
+    {
+        //return response('walla');
+
+        $saleso = SaleOrder::find($id);
+        foreach ($saleso->lines as $so){
+            InvoiceLine::find($so->id)->update([
+                'qty_received' => $so->fQtyToProcess,
+                'qty_accepted' => $so->fQtyToProcess,
+                'qc_done' => 1
+            ]);
+        }
+
+        return response('success');
+    }
 
     /**
      * Remove the specified resource from storage.

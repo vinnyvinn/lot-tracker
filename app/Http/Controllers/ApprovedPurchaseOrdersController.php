@@ -143,6 +143,32 @@ class ApprovedPurchaseOrdersController extends Controller
         return redirect()->back();
     }
 
+    public function approveAll($id)
+    {
+     $batches = PurchaseOrder::find($id);
+
+     foreach ($batches->batches as $batch){
+         BatchLine::find($batch->id)->update(['status' => PurchaseOrder::APPROVED_STATUS]);
+     }
+
+     return response('success');
+    }
+
+    public function inspectAll($id)
+    {
+        $batches = PurchaseOrder::find($id);
+
+        foreach ($batches->batches as $batch){
+            BatchLine::find($batch->id)->update([
+                'qc_done' => 1,
+                'qty_received' => $batch->qty,
+                'qty_accepted' => $batch->qty
+            ]);
+        }
+
+        return response('success');
+    }
+
     /**
      * Remove the specified resource from storage.
      *

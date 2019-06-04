@@ -28,6 +28,11 @@
                             <th>Qty Rejected</th>
                             <th>Reason</th>
                             <th>QC Done</th>
+                            @if(count($batches->batches) > 0 )
+                            <span class="pull-right" style="margin-top: 15px;margin-right: 5px;">
+                                <a href="#" class="btn btn-primary btn-xs confirmInspect" app_all="{{$id}}"><i class="fa fa-check-circle"></i>Inspect All</a>
+                            </span>
+                            @endif
                         </tr>
                         </thead>
                         <tbody>
@@ -245,6 +250,20 @@
                         }
                     })
 
+                    $('.confirmInspect').on('click',function () {
+                        if (confirm("Are you sure you want to Inspect All")) {
+                            $.ajax({
+                                url:'{{url('inspect-all-pos')}}'+'/'+$(this).attr('app_all'),
+                                type:'GET',
+                                success: function (response) {
+                                    console.log(response);
+                                    window.location.reload();
+                                }
+                            })
+                        }
+
+                    })
+
                     $('#qty_rejected').on('keyup',function () {
                         qty_approved = $('#actual_qty').val() - $(this).val();
                         $('#qty_approved').val(qty_approved);
@@ -279,7 +298,7 @@
 
                     })
 
-                    $('.inspect').on('click',function () {
+                    $('.pos').on('click','.inspect',function () {
 
                         inspect_id = $(this).attr('inspect_id');
                         $('.insp_id').val(inspect_id);

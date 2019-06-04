@@ -12,10 +12,10 @@
                         <tr>
                             <th>Order #</th>
                             <th>Date</th>
-                            <th>Client</th>
-                            <th>Item</th>
-                            <th>Qty</th>
-                            <th>Description</th>
+                            <th>cAccountName</th>
+                            <th>OrdTotExcl</th>
+                            <th>OrdTotIncl</th>
+                            <th>OrdTotTax</th>
                             <th>Status</th>
 
                         </tr>
@@ -34,11 +34,11 @@
                                @endif
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($so->InvDate)->format('d/m/Y')}}</td>
-                                <td>{{$so->client}}</td>
-                                <td>{{$so->item}}</td>
-                                <td>{{$so->fQuantity}}</td>
+                                <td>{{$so->cAccountName}}</td>
+                                <td>{{$so->OrdTotExcl}}</td>
+                                <td>{{$so->OrdTotIncl}}</td>
                                 <td>
-                                 {{$so->cDescription}}
+                                 {{$so->OrdTotTax}}
                                 </td>
                                 <td>
                                     @if($so->status== \App\SaleOrder::STATUS_NOT_ISSUED)
