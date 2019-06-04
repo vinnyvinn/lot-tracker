@@ -51,11 +51,60 @@ class SaleOrders
         }
 
         if ($invoices_found){
+
          return self::storeInvoices($invoices_found);
         }
-        return true;
+        else{
+          return self::checkQty();
+        }
+
     }
 
+    public function checkQty()
+    {
+
+       $items = [];
+        $invlines = [];
+        $sales =Invnum::select('OrderNum', 'AutoIndex','InvDate', 'cAccountName', 'OrdTotExcl', 'OrdTotTax', 'OrdTotIncl')
+            ->where('DocType' , 4)
+            ->where('DocState', 1)
+            ->get();
+        foreach ($sales as $s){
+            $invlines[] = Invnum::join('Client','Client.DCLink','=','InvNum.AccountID')
+                ->join('_btblInvoiceLines', '_btblInvoiceLines.iInvoiceID', '=', 'InvNum.AutoIndex')
+                ->join('StkItem','StkItem.StockLink','=','_btblInvoiceLines.iStockCodeID')
+                ->where('Doctype', 4)
+                ->where('DocState',1)
+                ->WhereIn('StkItem.ulIIItemType',['LOT','SERIAL'])
+                ->where('Invnum.OrderNum',$s->OrderNum)
+                ->select('Invnum.AutoIndex', 'Invnum.OrderNum', 'Invnum.InvDate','Client.Name', 'Invnum.cAccountName','_btblInvoiceLines.cDescription','_btblInvoiceLines.iWarehouseID', '_btblInvoiceLines.fQuantity','_btblInvoiceLines.idInvoiceLines','_btblInvoiceLines.fUnitCost','_btblInvoiceLines.fQtyToProcess','_btblInvoiceLines.fUnitPriceExcl','StkItem.ulIIItemType', '_btblInvoiceLines.iStockCodeID','_btblInvoiceLines.iStockCodeID','StkItem.ItemGroup','StkItem.Code')
+                ->get();
+        }
+        foreach (collect($invlines)->flatten() as $iv){
+
+            foreach (InvoiceLine::where('idInvoiceLines',$iv->idInvoiceLines)->get() as $item){
+                if ($item->fQuantity !=$iv->fQuantity){
+                    $items[] = $iv;
+                  }
+            }
+        }
+
+
+        foreach (collect($items)->flatten() as $ii){
+
+            InvoiceLine::where('idInvoiceLines','=',$ii->idInvoiceLines)->update([
+               'fQuantity' => $ii->fQuantity,
+                'fQtyToProcess' => $ii->fQtyToProcess ,
+                'fUnitPriceExcl' => number_format((float)$ii->fUnitPriceExcl, 2, '.', ''),
+                'qty_remaining' => $ii->fQuantity,
+                'status' => InvoiceLine::STATUS_PENDING
+            ]);
+
+        }
+     return true;
+
+
+}
     public function storeInvoices($invoices)
     {
 
@@ -127,9 +176,9 @@ foreach ($inlinesDetails as $line){
             foreach (json_decode($ln->batch_data) as $b){
                 foreach (BatchLine::where('id',$b->lot_number)->get() as $value){
                     ApprovedSaleOrder::create([
-                        'po' => $value->po,
+                        'po' => $ln->OrderNum,
                         'item' => $value->item,
-                        'batch'=> $b->name,
+                        'batch'=> $value->actual_batch,
                         'expiry_date' => $value->expiry_date,
                         'qty' => $b->qty,
                         'status' => $value->status,
