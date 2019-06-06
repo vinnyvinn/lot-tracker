@@ -164,7 +164,7 @@ class PurchaseOrderController extends Controller
             $vals[$key] = trim($val);
         }
         //Return empty array if no items found
-        //http://php.net/manual/en/function.explode.php#114273
-        return array_diff($vals, array(""));
+
+         return array_diff($vals, array(""));
     }
 }

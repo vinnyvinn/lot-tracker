@@ -4,7 +4,7 @@
 
     <div class="row">
             <div class="card">
-                <div class="card-header">PO Batchespp
+                <div class="card-header">PO Batches
 
 {{--                @if($batches->status != \App\PurchaseOrder::APPROVED_STATUS || $batches->status != \App\PurchaseOrder::PROCESSED_STATUS)--}}
                     <a href="{{url('batches/'.$id)}}" class="btn btn-info pull-right"><img src="{{asset('assets/img/export.png')}}" alt="" width="25">Import</a>
