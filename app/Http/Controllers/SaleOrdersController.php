@@ -143,7 +143,7 @@ class SaleOrdersController extends Controller
        $batch_data[] = [
             'lot_number' => request()->get('lot_number'),
             'qty' => request()->get('fQuantity'),
-           // 'name' => BatchLine::whereIn('id',request()->get('lot_number'))->actual_batch
+
         ];
        array_push($my_data,json_encode($batch_data));
 
@@ -153,7 +153,7 @@ foreach (json_decode(collect($my_data)) as $d){
              $clean_data[] =[
             'lot_number' => $value->lot_number,
             'qty' => $value->qty,
-            //'name' => $value->name
+
         ];
     }
     }
@@ -200,7 +200,7 @@ if (($inv->qty_remaining-request()->get('fQuantity')) < 0 ){
        $so =SaleOrders::sales()->updateLines($id);
 
        return response()->json($so);
-         //return redirect('/so');
+
 
 
     }
@@ -235,13 +235,13 @@ if (($inv->qty_remaining-request()->get('fQuantity')) < 0 ){
 
     public function inspectAll($id)
     {
-        //return response('walla');
+
 
         $saleso = SaleOrder::find($id);
         foreach ($saleso->lines as $so){
             InvoiceLine::find($so->id)->update([
-                'qty_received' => $so->fQtyToProcess,
-                'qty_accepted' => $so->fQtyToProcess,
+                'qty_received' => $so->fQuantity,
+                'qty_accepted' => $so->fQuantity,
                 'qc_done' => 1
             ]);
         }
