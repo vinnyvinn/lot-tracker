@@ -29,13 +29,29 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                <div class="from-group">
+                                <label for="type">Type</label>
+                                <select name="type" class="form-control type" style="height:100%" required>
+                                    <option></option>
+                                <option value="LOT">LOT</option>
+                                <option value="SERIAL">SERIAL</option>
+                                </select>
+                                </div>
+
+                                <br>
+
                                 <div class="form-group">
                                     <label for="item">Item Code</label>
                                     <input type="text" name="item" class="form-control item_code" required>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group quantity">
+                                    <label for="qty">Quantity</label>
+                                    <input type="number" name="qty" class="form-control qty">
+                                </div>
+
+                                <div class="form-group serials">
                                     <label for="all_serials">Serials</label>
-                                    <textarea name="all_serials" id="all_serials" cols="30" rows="10" class="form-control" required placeholder="Enter Commar Separated List"></textarea>
+                                    <textarea name="all_serials" id="all_serials" cols="30" rows="10" class="form-control"  placeholder="Enter Commar Separated List"></textarea>
                                 </div>
                                 <button type="submit" class="btn btn-success btn-block">Submit</button>
                             </form>
@@ -52,6 +68,15 @@
                 @endforeach
             </select>
         </div>
+        <div class="from-group">
+                                <label for="type">Type</label>
+                                <select name="type" class="form-control" style="height:100%">
+                                    <option></option>
+                                <option value="LOT">LOT</option>
+                                <option value="SERIAL">SERIAL</option>
+                                </select>
+                                </div>
+                                <br>
         <table class="table table-bordered" id="dynamicTable">
             <tr>
                 <th>Item Code</th>
@@ -82,6 +107,18 @@
     <script>
    $('.pos').DataTable()
    $('.manual_s').hide();
+   $('.serials').hide();
+   $('.quantity').hide();
+   $('.type').on('change',function () {
+       if ($(this).val() =='LOT'){
+           $('.serials').hide();
+           $('.quantity').show();
+       }
+       if ($(this).val() =='SERIAL'){
+           $('.serials').show();
+           $('.quantity').hide();
+       }
+   })
    $('.walla').on('click',function () {
       if ($(this).val() ==1){
           $('.manual_s').hide();

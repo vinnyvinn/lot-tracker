@@ -7,11 +7,11 @@
                 <div class="card-header">PO #: {{$batches->OrderNum}}
                     <br>
                     @if($batches->status == \App\PurchaseOrder::ARRIVED_PO || \App\PurchaseOrder::PENDING_STATUS && !\App\PurchaseOrder::where('id',$id)->where('OrderNum','like','open'.'%')->first())
-                    <a href="{{url('batches/'.$id)}}" class="btn btn-info pull-right"><img src="{{asset('assets/img/export.png')}}" alt="" width="25">Import</a>
-                    
-                    <a href="{{url(url('sample'))}}" class="btn btn-info pull-right mx-2"><img src="{{asset('assets/img/download.png')}}" alt="" width="25">Download Sample</a>
-                    <a href="{{url('create-batch/'.$id)}}" class="btn btn-info pull-right mx-2"><i class="fa fa-plus">Add New</i></a>
-                        @endif
+                        <a href="{{url('batches/'.$id)}}" class="btn btn-info pull-right"><img src="{{asset('assets/img/export.png')}}" alt="" width="25">Import</a>
+
+                        <a href="{{url(url('sample'))}}" class="btn btn-info pull-right mx-2"><img src="{{asset('assets/img/download.png')}}" alt="" width="25">Download Sample</a>
+                        <a href="{{url('create-batch/'.$id)}}" class="btn btn-info pull-right mx-2"><i class="fa fa-plus">Add New</i></a>
+                    @endif
                 </div>
                 <div class="card-body">
                     <table class="table table-striped table-bordered pos" style="width:100%">
@@ -24,69 +24,69 @@
                             <th>Type</th>
                             <th>Status</th>
                             <th>Action</th>
-                            @if(count($batches->batches))
-                            <span class="pull-right" style="margin-top: 15px;margin-right: 5px;">
+                            @if(count($batches->lines))
+                                <span class="pull-right" style="margin-top: 15px;margin-right: 5px;">
                             @if($batches->open_balance==1)
-                            <a href="#" class="btn btn-primary btn-xs confirmApproveB" app_all_b="{{$id}}"><i class="fa fa-check-circle"></i>Approve All</a>
-                            @elseif($batches->open_balance==0)
-                                <a href="#" class="btn btn-primary btn-xs confirmApprove" app_all="{{$id}}"><i class="fa fa-check-circle"></i>Approve All</a>
-                                @endif
+                                        <a href="#" class="btn btn-primary btn-xs confirmApproveB" app_all_b="{{$id}}"><i class="fa fa-check-circle"></i>Approve All</a>
+                                    @elseif($batches->open_balance==0)
+                                        <a href="#" class="btn btn-primary btn-xs confirmApprove" app_all="{{$id}}"><i class="fa fa-check-circle"></i>Approve All</a>
+                                    @endif
                             </span>
-                           
-                                @endif
+
+                            @endif
                         </tr>
                         </thead>
                         <tbody>
-                        @if(count($batches->batches))
-                        @foreach($batches->batches as $batch)
-                            <tr>
-                                <td>
-                                    @if($batches->status == \App\PurchaseOrder::PENDING_STATUS || \App\PurchaseOrder::RECEIVED_STATUS)
-                                        @if($batch->type =='LOT' && $batches->open_balance !=1)
-                                    <a href="#" title="Modify" class="label label-primary modify" data-toggle="modal" data-target="#modify" modify_id="{{$batch->id}}"><i class="fa fa-edit">{{$batch->po}}</i></a>
-                                    @elseif($batch->type =='SERIAL' && $batches->open_balance !=1)
-                                     <a href="#" title="Modify Serial" class="label label-primary serial" data-toggle="modal" data-target="#serial" serial_id="{{$batch->id}}"><i class="fa fa-edit">{{$batch->po}}</i></a>
-                                    @elseif($batch->type =='LOT' || $batch->type =='SERIAL' && $batches->open_balance==1)
-                                    <a href="#" title="Modify Opening Balance" class="label label-primary">{{$batch->po}}</a>
-                                    
-                                      @endif
-                                        @else
-                                        {{$batch->po}}
-                                    @endif
-                                 </td>
-                               <td>{{$batch->item}}</td>
-                                <td>{{$batch->qty}}</td>
-                                <td>{{$batch->qty_received}}</td>
-                                <td>{{$batch->type}}</td>
+                        @if(count($batches->lines))
+                            @foreach($batches->lines as $batch)
+                                <tr>
                                     <td>
-                                    @if($batch->status== \APP\PurchaseOrder::PENDING_STATUS)
-                                        <span class="label label-info">{{$batch->status}}</span>
+                                        @if($batches->status == \App\PurchaseOrder::PENDING_STATUS || \App\PurchaseOrder::RECEIVED_STATUS)
+                                            @if($batch->type =='LOT' && $batches->open_balance !=1)
+                                                <a href="#" title="Modify" class="label label-primary modify" data-toggle="modal" data-target="#modify" modify_id="{{$batch->id}}"><i class="fa fa-edit">{{$batch->po}}</i></a>
+                                            @elseif($batch->type =='SERIAL' && $batches->open_balance !=1)
+                                                <a href="#" title="Modify Serial" class="label label-primary serial" data-toggle="modal" data-target="#serial" serial_id="{{$batch->id}}"><i class="fa fa-edit">{{$batch->po}}</i></a>
+                                            @elseif($batch->type =='LOT' || $batch->type =='SERIAL' && $batches->open_balance==1)
+                                                <a href="#" title="Modify Opening Balance" class="label label-primary">{{$batch->po}}</a>
+
+                                            @endif
+                                        @else
+                                            {{$batch->po}}
+                                        @endif
+                                    </td>
+                                    <td>{{$batch->item}}</td>
+                                    <td>{{$batch->qty}}</td>
+                                    <td>{{$batch->qty_received}}</td>
+                                    <td>{{$batch->type}}</td>
+                                    <td>
+                                        @if($batch->status== \APP\PurchaseOrder::PENDING_STATUS)
+                                            <span class="label label-info">{{$batch->status}}</span>
                                         @elseif($batch->status==\App\PurchaseOrder::APPROVED_STATUS)
-                                        <span class="label label-success">{{$batch->status}}</span>
+                                            <span class="label label-success">{{$batch->status}}</span>
                                         @else
-                                        <span class="label label-warning">{{$batch->status}}</span>
+                                            <span class="label label-warning">{{$batch->status}}</span>
                                         @endif
-                                </td>
-                                <td>
-                                    @if($batch->status==\App\PurchaseOrder::PENDING_STATUS)
-                                    <i class="fa fa-check-circle approval" title="Approve" data-toggle="modal" data-target="#approve" approve_id="{{$batch->id}}" style="font-size: 20px"></i>
-                                    <i class="fa fa-times rejected mx-3" title="Reject" data-toggle="modal" data-target="#rejects" reject_id="{{$batch->id}}" style="font-size: 20px"></i>
-                                     @endif
-                                    @if($batch->batch)
-                                      @if($batches->open_balance == 1)
-                                            <a href="{{url('show-lines-b/'.$batches->id)}}" class="btn btn-success btn-xs" title="Show Batches"> <i class="fa fa-eye"></i></a>
-                                        @else
-                                        <a href="{{url('show-lines/'.$batch->id)}}" class="btn btn-success btn-xs" title="Show Batches"> <i class="fa fa-eye"></i></a>
+                                    </td>
+                                    <td>
+                                        @if($batch->status==\App\PurchaseOrder::PENDING_STATUS)
+                                            <i class="fa fa-check-circle approval" title="Approve" data-toggle="modal" data-target="#approve" approve_id="{{$batch->id}}" style="font-size: 20px"></i>
+                                            <i class="fa fa-times rejected mx-3" title="Reject" data-toggle="modal" data-target="#rejects" reject_id="{{$batch->id}}" style="font-size: 20px"></i>
                                         @endif
+                                        @if($batch->batch)
+                                            @if($batches->open_balance == 1)
+                                                <a href="{{url('show-lines-b/'.$batches->id)}}" class="btn btn-success btn-xs" title="Show Batches"> <i class="fa fa-eye"></i></a>
+                                            @else
+                                                <a href="{{url('show-lines/'.$batch->id)}}" class="btn btn-success btn-xs" title="Show Batches"> <i class="fa fa-eye"></i></a>
+                                            @endif
                                         @endif
-                                      
-                                </td>
-                            </tr>
-                        @endforeach
-                            @endif
+
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @endif
                         </tbody>
                     </table>
-                    @if(count($batches->batches))
+                    @if(count($batches->lines))
                         <div class="row">
                             <div class="col text-center">
                                 <button class="btn btn-primary border border-warning border-4 process_now my-2" post_to="{{$id}}"><img src="{{asset('assets/img/approved.png')}}" class="approve_all"><span class="walla_img">Process</span></button>
@@ -150,10 +150,10 @@
 
                                 <div class="modal-header panel panel-success" style="background-color: #1da1f2;">
 
-                                        <div class="modal-title panel-heading">
-                                           <span style="font-size: 20px">Po#: <strong class="text-left po_e"> </strong></span>
-                                            <span style="margin-left: 15px;font-size: 20px"> Item Code: <strong class="text-center item_e"> </strong></span>
-                                           <span style="margin-left: 15px;font-size: 20px">Quantity: <strong class="text-right actual_qty_e"> </strong></span>
+                                    <div class="modal-title panel-heading">
+                                        <span style="font-size: 20px">Po#: <strong class="text-left po_e"> </strong></span>
+                                        <span style="margin-left: 15px;font-size: 20px"> Item Code: <strong class="text-center item_e"> </strong></span>
+                                        <span style="margin-left: 15px;font-size: 20px">Quantity: <strong class="text-right actual_qty_e"> </strong></span>
 
                                     </div>
 
@@ -181,25 +181,28 @@
 
                                         <!-- Modal footer -->
                                         <div class="modal-footer">
-                                        <button type="submit" class="btn btn-success btn-block"><i class="fa fa-shopping-cart" aria-hidden="true">Save</i>
-                                        </button>
+                                            <button type="submit" class="btn btn-success btn-block"><i class="fa fa-shopping-cart" aria-hidden="true">Save</i>
+                                            </button>
                                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                                         </div>
-                                        </form>
+                                    </form>
 
                                 </div>
                             </div>
                         </div>
                     </div>
+
                     <!-- The Approve Modal -->
                     <div class="modal" id="approve">
                         <div class="modal-dialog">
                             <div class="modal-content">
+
                                 <!-- Modal Header -->
                                 <div class="modal-header">
                                     <h4 class="modal-title">Approve PO Batch</h4>
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                                 </div>
+
                                 <!-- Modal body -->
                                 <div class="modal-body">
                                     <form class="approve_form">
@@ -225,16 +228,18 @@
                                             <input type="text" name="actual_expiry" class="form-control" id="actual_expiry" disabled>
                                         </div>
                                         <input type="hidden" name="status" value="{{\App\PurchaseOrder::APPROVED_STATUS}}">
-                                <!-- Modal footer -->
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-primary">Approve</button>
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+
+
+                                        <!-- Modal footer -->
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Approve</button>
+                                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </form>
                                 </div>
-                                </form>
                             </div>
-                      </div>
-            </div>
-    </div>
+                        </div>
+                    </div>
                     <!-- The Reject Modal -->
                     <div class="modal" id="rejects">
                         <div class="modal-dialog">
@@ -294,9 +299,9 @@
 
                     </div>
 
+                </div>
             </div>
         </div>
-    </div>
     </div>
 @endsection
 @section('scripts')
@@ -346,7 +351,7 @@
 
             })
 
-            
+
             $('.pos').on('click','.serial', function () {
 
                 serial_id = $(this).attr('serial_id');
@@ -365,28 +370,28 @@
 
             $('.confirmApprove').on('click',function () {
                 if (confirm("Are you sure you want to Approve All")) {
-                   $.ajax({
-                       url:'{{url('approve-all-pos')}}'+'/'+$(this).attr('app_all'),
-                       type:'GET',
-                       success: function (response) {
-                           console.log(response);
-                           window.location.reload();
-                       }
-                   })
+                    $.ajax({
+                        url:'{{url('approve-all-pos')}}'+'/'+$(this).attr('app_all'),
+                        type:'GET',
+                        success: function (response) {
+                            console.log(response);
+                            window.location.reload();
+                        }
+                    })
                 }
 
             })
 
             $('.confirmApproveB').on('click',function () {
                 if (confirm("Are you sure you want to Approve All")) {
-                   $.ajax({
-                       url:'{{url('approve-all-pos-b')}}'+'/'+$(this).attr('app_all_b'),
-                       type:'GET',
-                       success: function (response) {
-                           console.log(response);
-                           window.location.reload();
-                       }
-                   })
+                    $.ajax({
+                        url:'{{url('approve-all-pos-b')}}'+'/'+$(this).attr('app_all_b'),
+                        type:'GET',
+                        success: function (response) {
+                            console.log(response);
+                            window.location.reload();
+                        }
+                    })
                 }
 
             })
@@ -396,7 +401,7 @@
             $('.pos').on('click','.approval', function () {
                 //alert('cool');
                 approve_id = $(this).attr('approve_id');
-             console.log('walla')
+                console.log('walla')
                 console.log(approve_id)
                 console.log('-----------')
                 $.ajax({
@@ -548,8 +553,8 @@
                                 url: '{{url('process-pos')}}' + '/' + posted,
                                 type: 'GET',
                                 success: function (response) {
-                                     console.log(response);
-                                     window.location.href = '{{url('/pos')}}';
+                                    console.log(response);
+                                    window.location.href = '{{url('/pos')}}';
                                 }
                             })
                         }

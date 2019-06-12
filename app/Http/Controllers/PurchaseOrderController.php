@@ -98,19 +98,20 @@ class PurchaseOrderController extends Controller
                 'actual_expiry' =>date('d/m/Y'),
                 'purchase_order_id' => PurchaseOrder::count()+1,
                 'auto_index' => PurchaseOrder::orderby('id','desc')->first()->auto_index+1,
-                'warehouse' => request()->get('warehouse')
+                'warehouse' => request()->get('warehouse'),
+                'type' => request()->get('type')
             ]);
         }
 
         PurchaseOrder::create([
             'OrderNum' => $po,
             'InvDate' => Carbon::now(),
-            'supplier' => 'SUPP01',
-            'cDescription' => 'Lot Item 01',
+            'cAccountName' => 'SUPP01',
             'fQuantity'=> $i,
-            'type' => 'LOT',
+            'type' => request()->get('type'),
             'auto_index' => PurchaseOrder::orderby('id','desc')->first()->auto_index+1,
-            'status' => PurchaseOrder::RECEIVED_STATUS
+            'status' => PurchaseOrder::RECEIVED_STATUS,
+            'open_balance' => 1
         ]);
 
         Session::flash('success','Item Serials Imported successfully.');
@@ -127,28 +128,29 @@ class PurchaseOrderController extends Controller
          BatchLine::create([
              'po' => $po,
              'item' => request()->get('item'),
-             'qty'=>1,
+             'qty'=>request()->get('qty') ? request()->get('qty') :1,
              'batch' => $s,
              'expiry_date'=> date('d/m/Y'),
              'status' => PurchaseOrder::PENDING_STATUS,
              'actual_batch'=> $s,
-             'actual_qty' => 1,
+             'actual_qty' => request()->get('qty') ? request()->get('qty') :1,
              'actual_expiry' =>date('d/m/Y'),
              'purchase_order_id' => PurchaseOrder::count()+1,
              'auto_index' => PurchaseOrder::orderby('id','desc')->first()->auto_index+1,
-             'warehouse' => request()->get('warehouse')
+             'warehouse' => request()->get('warehouse'),
+             'type' => request()->get('type')
          ]);
      }
 
         PurchaseOrder::create([
             'OrderNum' => $po,
             'InvDate' => Carbon::now(),
-            'supplier' => 'SUPP01',
-            'cDescription' => 'Lot Item 01',
-            'fQuantity'=> $i,
-            'type' => 'LOT',
+            'cAccountName' => 'SUPP01',
+            'fQuantity'=> request()->get('qty') ? request()->get('qty') :$i,
+            'type' => request()->get('type'),
             'auto_index' => PurchaseOrder::orderby('id','desc')->first()->auto_index+1,
-            'status' => PurchaseOrder::RECEIVED_STATUS
+            'status' => PurchaseOrder::RECEIVED_STATUS,
+            'open_balance' => 1
         ]);
 
         Session::flash('success','Item Serials Imported successfully.');

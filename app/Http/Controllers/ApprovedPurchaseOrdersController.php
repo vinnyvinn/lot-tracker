@@ -55,29 +55,46 @@ class ApprovedPurchaseOrdersController extends Controller
     public function show($id)
     {
 
-        $batches = PurchaseOrder::find($id)->batches;
+        $batches = PurchaseOrder::find($id);
 
-        if (count($batches) < 1){
+        if (count($batches->batches) < 1){
 
-        return response()->json($batches);
+        return response()->json('nobatches');
         }
-        $qty = AppprovePurchaseOrders::init()->validateQty($id);
+//        $qty = AppprovePurchaseOrders::init()->validateQty($id);
+//
+//        if($qty !=PurchaseOrder::find($id)->fQuantity){
+//
+//           return response()->json(['qty' => 'Sorry,sum quantities must be equal to PO quantity']);
+//        }
 
-        if($qty !=PurchaseOrder::find($id)->fQuantity){
+//       if (Setting::first()->enable_inspection == Setting::ENABLE_INSPECTION){
+//           foreach ($batches as $batch){
+//                if ($batch->qc_done == 0){
+//                   return response('fail');
+//               }
+//           }
+//       }
 
-           return response()->json(['qty' => 'Sorry,sum quantities must be equal to PO quantity']);
-        }
 
-       if (Setting::first()->enable_inspection == Setting::ENABLE_INSPECTION){
-           foreach ($batches as $batch){
-                if ($batch->qc_done == 0){
-                   return response('fail');
-               }
-           }
-       }
 
       AppprovePurchaseOrders::init()->storeToSage($id);
-        return response()->json($batches);
+      //  return response()->json($batches);
+       }
+       public function approvePO($id)
+    {
+
+        $batches = PurchaseOrder::find($id);
+
+        if (count($batches->lines) < 1){
+
+        return response()->json('nobatches');
+        }
+
+
+
+      AppprovePurchaseOrders::init()->storeToSage_2($id);
+      
        }
 
     public function processPos($id)
@@ -103,6 +120,22 @@ class ApprovedPurchaseOrdersController extends Controller
 
         return response('success');
 
+       }
+       public function poStatus_2($id){
+        $batches = PurchaseOrder::find($id);
+            if (count($batches->lines) < 1){
+          return response('nodata');
+      }
+      foreach ($batches->lines as $batch){
+             if ($batch->status == PurchaseOrder::PENDING_STATUS){
+             return response('fail');
+          }
+      }
+      if (Setting::first()->enable_inspection == Setting::DISABLE_INSPECTION){
+          return response('proceed');
+      }
+
+      return response('success');
        }
     /**
      * Show the form for editing the specified resource.
@@ -149,6 +182,21 @@ class ApprovedPurchaseOrdersController extends Controller
 
      foreach ($batches->batches as $batch){
          BatchLine::find($batch->id)->update(['status' => PurchaseOrder::APPROVED_STATUS]);
+     }
+
+     return response('success');
+    }
+    public function approveAllBal($id)
+    {
+       
+
+     $batches = PurchaseOrder::find($id);
+       foreach ($batches->lines as $batch){
+         BatchLine::find($batch->id)->update([
+             'status' => PurchaseOrder::APPROVED_STATUS,
+             'qty_accepted' => $batch->qty,
+             'qty_received' => $batch->qty
+             ]);
      }
 
      return response('success');

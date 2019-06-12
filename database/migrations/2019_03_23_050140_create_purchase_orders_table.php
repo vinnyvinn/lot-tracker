@@ -17,13 +17,16 @@ class CreatePurchaseOrdersTable extends Migration
             $table->increments('id');
             $table->string('OrderNum');
             $table->string('InvDate');
-            $table->string('supplier');
-            $table->string('cDescription');
-            $table->string('fQuantity');
+            $table->string('cAccountName')->nullable();
+            $table->string('OrdTotExcl')->nullable()->default(0);
+            $table->string('OrdTotIncl')->nullable()->default(0);
+            $table->string('OrdTotTax')->nullable()->default(0);
+            $table->string('fQuantity')->nullable();
             $table->string('type')->default('NEW')->nullable();
             $table->integer('auto_index');
             $table->string('status');
-            $table->string('state')->default(0);
+            $table->integer('open_balance')->default(0);
+            $table->string('state')->default(App\PurchaseOrder::NOT_RECEIVED_STATE);
             $table->timestamps();
         });
     }

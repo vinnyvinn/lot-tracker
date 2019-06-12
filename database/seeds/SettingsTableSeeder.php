@@ -12,6 +12,6 @@ class SettingsTableSeeder extends Seeder
     public function run()
     {
         Setting::truncate();
-        Setting::create(['enable_inspection' => 1]);
+        Setting::create(['enable_inspection' => 0]);
     }
 }

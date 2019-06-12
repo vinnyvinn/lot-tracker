@@ -20,12 +20,20 @@ const PENDING_STATUS= 'PENDING';
 const POSTED_STATUS= 'POSTED';
 const POSTED_TO_SAGE = 1;
 const NOT_POSTED_TO_SAGE = 0;
-
+const NOT_RECEIVED_STATE ='NOT RECEIVED';
+const PARTIALLY_RECEIVED_STATE ='PARTIALLY RECEIVED';
+const FULLY_RECEIVED_STATE ='PARTIALLY RECEIVED';
 
 protected $guarded = [];
 
     public function batches()
     {
-        return $this->hasMany(BatchLine::class);
+        return $this->hasMany(BatchLine::class,'iInvoiceID','auto_index');
 }
+
+    public function lines()
+    {
+        return $this->hasMany(BatchLine::class,'purchase_order_id');
+}
+
 }

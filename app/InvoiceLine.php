@@ -16,6 +16,8 @@ class InvoiceLine extends Model
     const STATE_FULLY_RECEIVED = 'Fully Received';
 
 function batch_lines(){
-    return $this->hasMany(BatchLine::class,'auto_index','auto_index');
+    return $this->hasMany(BatchLine::class,'item','item');
 }
+
+
 }

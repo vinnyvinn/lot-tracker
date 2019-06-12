@@ -12,7 +12,6 @@
                   <a href="{{url(url('sample-op'))}}" class="btn btn-info pull-right mx-2"><img src="{{asset('assets/img/download.png')}}" alt="" width="25">Download Sample Open.Bal</a>
   <a href="{{url('add-serials')}}" class="btn btn-info pull-right mx-2"><i class="fa fa-plus">Add New Open.Bal</i></a>
                   </span>
-
               </div>
               <div class="card-body">
                   <table class="table table-striped table-bordered pos" style="width:100%">
@@ -20,11 +19,11 @@
                       <tr>
                           <th>PO #</th>
                           <th>Date</th>
-                          <th>Supplier</th>
-                          <th>Item</th>
-                          <th>Qty</th>
+                          <th>cAccountName</th>
+                          <th>OrdTotExcl</th>
+                          <th>OrdTotIncl</th>
+                          <th>OrdTotTax</th>
                           <th>Status</th>
-
                       </tr>
                       </thead>
                       <tbody>
@@ -42,9 +41,10 @@
                               <a href="{{url('batches/'.$po->id.'/edit')}}" class="btn btn-success btn-sm"><span class="label label-default"></span> {{$po->OrderNum}}</a>
                           @endif
                           <td>{{ \Carbon\Carbon::parse($po->InvDate)->format('d/m/Y')}}</td>
-                          <td>{{$po->supplier}}</td>
-                          <td>{{$po->cDescription}}</td>
-                          <td>{{$po->fQuantity}}</td>
+                          <td>{{$po->cAccountName}}</td>
+                          <td>{{$po->OrdTotExcl}}</td>
+                          <td>{{$po->OrdTotIncl}}</td>
+                          <td>{{$po->OrdTotTax}}</td>
                           <td>
                               @if($po->status== \App\PurchaseOrder::ARRIVED_PO)
                                   <span class="label label-info">{{$po->status}}</span>
@@ -85,6 +85,13 @@
                                 <option value="{{$h->id}}">{{$h->name}}</option>
                                     @endforeach
                             </select>
+                        </div>
+                        <div class="form-group">
+                        <label for="type">Type</label>
+                        <select name="type" class="form-control" style="height:100%">
+                        <option value="LOT">LOT</option>
+                        <option value="SERIAL">SERIAL</option>
+                        </select>
                         </div>
                         <div class="form-group">
                             <label for="file">Excel File</label>

@@ -16,12 +16,13 @@ class CreateBatchLinesTable extends Migration
         Schema::create('batch_lines', function (Blueprint $table) {
             $table->increments('id');
             $table->string('po');
-            $table->string('item');
-            $table->string('batch');
+            $table->string('item')->nullable();
+            $table->longText('batch')->nullable();
             $table->string('expiry_date')->deafult(date('d-m-Y'));
             $table->string('qty')->default(1);
             $table->string('status');
-            $table->string('actual_batch');
+            $table->string('type')->nullable()->default('LOT');
+            $table->string('actual_batch')->nullable();
             $table->string('actual_qty')->nullable()->default(date('d-m-Y'));
             $table->string('actual_expiry')->nullable()->default(date('d-m-Y'));
             $table->integer('purchase_order_id')->nullable();
@@ -31,8 +32,10 @@ class CreateBatchLinesTable extends Migration
             $table->string('reject_reason')->nullable();
             $table->string('qc_done')->default(0);
             $table->string('qty_accepted')->default(0);
+            $table->integer('iInvoiceID')->nullable();
             $table->integer('auto_index');
             $table->string('warehouse')->nullable()->default('1');
+            $table->integer('idInvoiceLines')->nullable();
             $table->timestamps();
         });
     }

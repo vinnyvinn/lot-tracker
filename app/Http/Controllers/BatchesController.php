@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\BatchLine;
 use App\BtblInvoiceLines;
+use App\InvoiceLine;
 use App\PurchaseOrder;
 use App\RejectReason;
 use App\Warehouse;
@@ -137,7 +138,8 @@ class BatchesController extends Controller
                     'actual_expiry' => date('d/m/Y'),
                     'purchase_order_id' => PurchaseOrder::count()+1,
                     'auto_index' => PurchaseOrder::orderby('id','desc')->first()->auto_index+1,
-                    'warehouse' => request()->get('warehouse')
+                    'warehouse' => request()->get('warehouse'),
+                    'type' => request()->get('type')
                 ];
             }
 
@@ -148,12 +150,12 @@ class BatchesController extends Controller
                 PurchaseOrder::create([
                     'OrderNum' => 'Opening Balance('.date('d/m/Y H:i:s').')',
                     'InvDate' => Carbon::now(),
-                    'supplier' => 'SUPP01',
-                    'cDescription' => 'Lot Item 01',
+                    'cAccountName' => 'SUPP01',
                     'fQuantity'=> $qty,
-                    'type' => 'LOT',
+                    'type' => request()->get('type'),
                     'auto_index' => PurchaseOrder::orderby('id','desc')->first()->auto_index+1,
-                    'status' => PurchaseOrder::RECEIVED_STATUS
+                    'status' => PurchaseOrder::RECEIVED_STATUS,
+                    'open_balance' => 1
                     ]);
             }
         }
@@ -182,12 +184,18 @@ class BatchesController extends Controller
     public function edit($id)
     {
         $batches = PurchaseOrder::find($id);
-        if($batches->status == PurchaseOrder::PENDING_STATUS || $batches->status == PurchaseOrder::RECEIVED_STATUS){
-            return view('batches.edit')->with('batches',PurchaseOrder::find($id))->with('id',$id);
+        
+        if($batches->status == PurchaseOrder::PENDING_STATUS || $batches->status == PurchaseOrder::RECEIVED_STATUS){ 
+            if($batches->open_balance==1){
+                return  view('batches.edit_open')->with('batches',$batches)->with('id',$id);
+            }
+            else{
+                return view('batches.edit')->with('batches',$batches)->with('id',$id);
+            }
+           
         }
         elseif ($batches->status == PurchaseOrder::PROCESSED_STATUS){
-
-            return view('pos.approved.edit')->with('batches',PurchaseOrder::find($id))->with('id',$id)->with('reasons',RejectReason::all());
+               return view('pos.approved.edit')->with('batches',PurchaseOrder::find($id))->with('id',$id)->with('reasons',RejectReason::all());
         }
         elseif ($batches->status == PurchaseOrder::APPROVED_STATUS){
 
@@ -247,6 +255,114 @@ class BatchesController extends Controller
         BatchLine::find($id)->update($request->except('_token'));
         return response()->json($request->all());
 }
+
+    public function receiceBatches($id)
+    {
+        $batch = BatchLine::find($id);
+        $available_lots = [];
+        if ($batch->batch){
+            $available_lots[] = $batch->batch;
+        }
+        $qty = 0;
+        $batch_data = [];
+           foreach (request()->get('addmore') as $q){
+              $qty+=$q['qty'];
+               $batch_data [] = [
+                 'keyVal' => $id,
+                 'qty' => $qty,
+                 'lot_serial' => $q['lot']
+               ];
+        }
+           array_push($available_lots,json_encode($batch_data));
+           $final_batch = [];
+           foreach ($available_lots as $lot){
+              foreach (json_decode(collect($lot)) as $l){
+                  foreach (json_decode($l) as $item){
+                      $final_batch [] = [
+                          'keyVal' => $item->keyVal,
+                          'qty' => $item->qty,
+                          'lot_serial' => $item->lot_serial
+                      ];
+                  }
+
+              }
+           }
+        if($batch->qty -($batch->qty_received + $qty) < 0){
+            return response('negativevalue');
+        }
+        if ($batch->qty -($batch->qty_received + $qty) >= 0){
+              foreach (request()->get('addmore') as $q){
+
+                $batch->update([
+                   'batch' => json_encode($final_batch),
+                   'qty_received'=> $batch->qty_received + $q['qty'],
+                   'qty_accepted' => $batch->qty_received + $q['qty'],
+                ]);
+
+            }
+        }
+
+}
+
+    public function receiveSerials($id)
+    {
+        $batch = BatchLine::find($id);
+        $available_lots = [];
+        if ($batch->batch){
+            $available_lots[] = $batch->batch;
+        }
+        $qty = 0;
+        $batch_data = [];
+        foreach (request()->get('addmore') as $q){
+            $qty++;
+            $batch_data [] = [
+                'keyVal' => $id,
+                'qty' => 1,
+                'lot_serial' => $q['lot']
+            ];
+        }
+        array_push($available_lots,json_encode($batch_data));
+        $final_batch = [];
+        foreach ($available_lots as $lot){
+            foreach (json_decode(collect($lot)) as $l){
+                foreach (json_decode($l) as $item){
+                    $final_batch [] = [
+                        'keyVal' => $item->keyVal,
+                        'qty' => 1,
+                        'lot_serial' => $item->lot_serial
+                    ];
+                }
+
+            }
+        }
+
+        if($batch->qty -($batch->qty_received + $qty) < 0){
+            return response('negativevalue');
+        }
+
+        if ($batch->qty -($batch->qty_received + $qty) >= 0){
+            foreach (request()->get('addmore') as $q){
+
+                $batch->update([
+                    'batch' => json_encode($final_batch),
+                    'qty_received'=> $batch->qty_received + 1,
+                    'qty_accepted' => $batch->qty_received + 1,
+                ]);
+
+            }
+        }
+
+    }
+    public function showBatches($id)
+    {
+return view('batches.show_batch')->with('batches',BatchLine::find($id));
+}
+
+public function showBatchesBal($id)
+    {
+return view('batches.show_batches_bal')->with('batches',PurchaseOrder::find($id)->batches);
+}
+
     /**
      * Remove the specified resource from storage.
      *

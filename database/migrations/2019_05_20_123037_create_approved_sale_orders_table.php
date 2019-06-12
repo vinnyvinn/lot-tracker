@@ -19,8 +19,8 @@ class CreateApprovedSaleOrdersTable extends Migration
             $table->string('po');
             $table->string('item');
             $table->string('batch');
-            $table->string('expiry_date')->nullable()->default(date('d-m-Y'));
-            $table->string('qty');
+            $table->date('expiry_date')->nullable()->default(date('d-m-Y'));
+            $table->float('qty');
             $table->string('status');
             $table->boolean('posted')->default(1);
             $table->timestamps();

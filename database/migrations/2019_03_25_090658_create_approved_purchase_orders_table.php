@@ -18,8 +18,9 @@ class CreateApprovedPurchaseOrdersTable extends Migration
             $table->string('po');
             $table->string('item');
             $table->string('batch');
+            $table->string('type')->nullable();
             $table->string('expiry_date')->nullable()->default(date('d-m-Y'));
-            $table->string('qty');
+            $table->float('qty');
             $table->string('status');
             $table->boolean('posted')->default(0);
             $table->string('warehouse')->nullable();

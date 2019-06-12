@@ -1,8 +1,7 @@
 @extends('layouts.app')
-
 @section('content')
     <div class="row">
-        <div class="col-md-10 mx-auto">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-header">Invoice Lines</div>
                 <div class="card-body">
@@ -17,44 +16,48 @@
                             <th>Qty</th>
                             <th>Qty Issued</th>
                             <th>Qty Remaining</th>
+                            <th>Qty Available</th>
                             <th>Status</th>
                             <th>Action</th>
+                            @if(count($inv_lines->lines ))
                             <span class="pull-right" style="margin-top: 15px;margin-right: 5px;">
                                 <a href="#" class="btn btn-primary btn-xs confirmApprove" app_all="{{$inv_lines->id}}"><i class="fa fa-check-circle"></i>Approve All</a>
                             </span>
-                        </tr>
+                            @endif
+                         </tr>
                         </thead>
                         <tbody>
-                        @foreach($inv_lines->lines as $so)
-                            <tr>
+                        @foreach($sales as $so)
+                                <tr>
                                 <td>
-                                    <a href="#" title="Modify" class="label label-primary modify" data-toggle="modal" data-target="#modify" modify_id="{{$so->id}}"><i class="fa fa-edit">{{$so->OrderNum}}</i></a>
+                                <a href="#" title="Modify" class="label label-primary modify" data-toggle="modal" qty_available="{{$so['qty_available']}}" data-target="#modify" modify_id="{{$so['id']}}" ><i class="fa fa-edit">{{$so['OrderNum']}}</i></a>
                                 </td>
-                                <td>{{ \Carbon\Carbon::parse($so->InvDate)->format('d/m/Y')}}</td>
-                                <td>{{$so->cAccountName}}</td>
-                                <td>{{$so->item}}</td>
+                                <td>{{ $so['InvDate']}}</td>
+                                <td>{{$so['cAccountName']}}</td>
+                                <td>{{$so['item']}}</td>
                                 <td>
-                                    {{$so->cDescription}}
+                                 {{$so['cDescription']}}
                                 </td>
-                                <td>{{$so->fQuantity}}</td>
-                                <td>{{$so->qty_received}}</td>
-                                <td>{{$so->qty_remaining}}</td>
-
+                                <td>{{$so['fQuantity']}}</td>
+                                <td>{{$so['qty_received']}}</td>
+                                <td>{{$so['qty_remaining']}}</td>
+                                <td>{{$so['qty_available']}}</td>
+                                <span class="batches" wah_id="{{$so['batches']}}"></span>
                                 <td>
-                                    @if($so->status== \App\InvoiceLine::STATUS_PENDING)
-                                        <span class="label label-info">{{$so->status}}</span>
-                                        @elseif($so->status== \App\InvoiceLine::STATUS_REJECTED)
-                                        <span class="label label-warning">{{$so->status}}</span>
+                                    @if($so['status']== \App\InvoiceLine::STATUS_PENDING)
+                                        <span class="label label-info">{{$so['status']}}</span>
+                                        @elseif($so['status']== \App\InvoiceLine::STATUS_REJECTED)
+                                        <span class="label label-warning">{{$so['status']}}</span>
                                     @else
-                                        <span class="label label-success">{{$so->status}}</span>
+                                        <span class="label label-success">{{$so['status']}}</span>
                                     @endif
                                 </td>
                                 <td>
-                                    @if($so->status==\App\InvoiceLine::STATUS_PENDING)
-                                        <i class="fa fa-check-circle approval" title="Approve" data-toggle="modal" data-target="#approve" approve_id="{{$so->id}}" style="font-size: 20px"></i>
-                                        <i class="fa fa-times rejected mx-3" title="Reject" data-toggle="modal" data-target="#rejects" reject_id="{{$so->id}}" style="font-size: 20px"></i>
+                                    @if($so['status']==\App\InvoiceLine::STATUS_PENDING)
+                                        <i class="fa fa-check-circle approval" title="Approve" data-toggle="modal" data-target="#approve" approve_id="{{$so['id']}}" style="font-size: 20px"></i>
+                                        <i class="fa fa-times rejected mx-3" title="Reject" data-toggle="modal" data-target="#rejects" reject_id="{{$so['id']}}" style="font-size: 20px"></i>
                                    @else
-                                        <a href="{{url('so/'.$so->id.'/edit')}}" class="btn btn-primary btn-xs"> <i class="fa fa-eye" style="font-size: 14px" title="Show details"></i></a>
+                                        <a href="{{url('so/'.$so['id'].'/edit')}}" class="btn btn-primary btn-xs"> <i class="fa fa-eye" style="font-size: 14px" title="Show details"></i></a>
                                     @endif
                                </td>
                             </tr>
@@ -68,7 +71,6 @@
                         </div>
                     </div>
                 @endif
-
                 <!-- The Approve Modal -->
                     <div class="modal" id="modify">
                         <div class="modal-dialog">
@@ -125,7 +127,7 @@
                                        <input type="hidden" name="id" id="inv_id">
                                         <!-- Modal footer -->
                                         <div class="modal-footer">
-                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                            <button type="submit" class="btn btn-primary s_r">Submit</button>
                                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                                         </div>
                                     </form>
@@ -133,7 +135,6 @@
                             </div>
                         </div>
                     </div>
-
                     <!-- The Approve Modal -->
                     <div class="modal" id="approve">
                         <div class="modal-dialog">
@@ -226,7 +227,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -245,7 +245,18 @@
             var reject_id;
             var modify_id;
             $('.modify').on('click',function () {
-                //alert('cool');
+                if ($(this).attr('qty_available')==0){
+                   $('.s_r').attr('disabled',true);
+                    return toastr.warning('fail','Sorry,You do not have enough Quantity.');
+                }
+                    // $.each(JSON.parse($('.batches').attr('wah_id')),function (key,value) {
+                    //     var id = value.id
+                    //     var batch = value.batch;
+                    //     var item = value.item;
+                    //    $('.lot_number').append("<option value='"+id+"'>"+batch+"</option>")
+                    //   //console.log(value.batch);
+                    // })
+     
                 modify_id = $(this).attr('modify_id');
                 $('#inv_id').val(modify_id);
                 $.ajax({
@@ -261,13 +272,16 @@
                         if(len > 0) {
                             // Read data and create <option >
                             for (var i = 0; i < len; i++) {
+                                console.log('llllllllllllllll')
+                                console.log(response['batches'][i].batch)
+                                console.log('---------------------');
                                 var id = response['batches'][i].id;
                                 var batch = response['batches'][i].batch;
-                                var option = "<option value='" + id + "'>" + batch + "</option>";
+                                var qty = response['batches'][i].qty;
+                                var option = "<option value='" + id + "'>" + batch +'(Qty = '+ qty+')'+"</option>";
                                 $("#lot_number").append(option);
                             }
-
-                            $('#lot_number').on('change',function () {
+                            $('.lot_number').on('change',function () {
                                 //console.log($(this).val());
                                $.ajax({
                                    url:'{{url('lot-qty')}}' +'/'+modify_id,
@@ -287,7 +301,6 @@
                     }
                 });
             })
-
             $('.confirmApprove').on('click',function () {
                 if (confirm("Are you sure you want to Approve All")) {
                     $.ajax({
@@ -299,9 +312,7 @@
                         }
                     })
                 }
-
             })
-
             $('.approval').on('click',function () {
                 //alert('cool');
                 approve_id = $(this).attr('approve_id');
@@ -367,15 +378,12 @@
                         if(response=='noitems'){
                             return toastr.warning('fail','Sorry,You do not have invoice lines in this invoice')
                         }
-
-                            window.location.reload();
-
+                     window.location.reload();
                     }
                 })
             });
             $('.process_now').on('click',function () {
                 var so = $(this).attr('post_to');
-
                $.ajax({
                     url:'{{url('process-so')}}'+ '/'+so,
                     type:'GET',

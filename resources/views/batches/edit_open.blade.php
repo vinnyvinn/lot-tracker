@@ -24,21 +24,17 @@
                             <th>Type</th>
                             <th>Status</th>
                             <th>Action</th>
-                            @if(count($batches->batches))
+                            @if(count($batches->lines))
                             <span class="pull-right" style="margin-top: 15px;margin-right: 5px;">
-                            @if($batches->open_balance==1)
-                            <a href="#" class="btn btn-primary btn-xs confirmApproveB" app_all_b="{{$id}}"><i class="fa fa-check-circle"></i>Approve All</a>
-                            @elseif($batches->open_balance==0)
-                                <a href="#" class="btn btn-primary btn-xs confirmApprove" app_all="{{$id}}"><i class="fa fa-check-circle"></i>Approve All</a>
-                                @endif
-                            </span>
+                             <a href="#" class="btn btn-primary btn-xs confirmApproveB" app_all_b="{{$id}}"><i class="fa fa-check-circle"></i>Approve All</a>
+                                 </span>
                            
                                 @endif
                         </tr>
                         </thead>
                         <tbody>
-                        @if(count($batches->batches))
-                        @foreach($batches->batches as $batch)
+                        @if(count($batches->lines))
+                        @foreach($batches->lines as $batch)
                             <tr>
                                 <td>
                                     @if($batches->status == \App\PurchaseOrder::PENDING_STATUS || \App\PurchaseOrder::RECEIVED_STATUS)
@@ -86,7 +82,7 @@
                             @endif
                         </tbody>
                     </table>
-                    @if(count($batches->batches))
+                    @if(count($batches->lines))
                         <div class="row">
                             <div class="col text-center">
                                 <button class="btn btn-primary border border-warning border-4 process_now my-2" post_to="{{$id}}"><img src="{{asset('assets/img/approved.png')}}" class="approve_all"><span class="walla_img">Process</span></button>
@@ -191,15 +187,18 @@
                             </div>
                         </div>
                     </div>
+
                     <!-- The Approve Modal -->
                     <div class="modal" id="approve">
                         <div class="modal-dialog">
                             <div class="modal-content">
+
                                 <!-- Modal Header -->
                                 <div class="modal-header">
                                     <h4 class="modal-title">Approve PO Batch</h4>
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                                 </div>
+
                                 <!-- Modal body -->
                                 <div class="modal-body">
                                     <form class="approve_form">
@@ -225,6 +224,8 @@
                                             <input type="text" name="actual_expiry" class="form-control" id="actual_expiry" disabled>
                                         </div>
                                         <input type="hidden" name="status" value="{{\App\PurchaseOrder::APPROVED_STATUS}}">
+
+
                                 <!-- Modal footer -->
                                 <div class="modal-footer">
                                     <button type="submit" class="btn btn-primary">Approve</button>
@@ -517,10 +518,11 @@
                 })
             });
             $('.process_now').on('click', function () {
+                
                 var posted = $(this).attr('post_to');
 
                 $.ajax({
-                    url: '{{url('check-po-status')}}' + '/' + posted,
+                    url: '{{url('check-po-status_2')}}' + '/' + posted,
                     type: 'GET',
                     success: function (response) {
                         console.log(response);
@@ -532,12 +534,11 @@
                         }
                         if (response =='proceed'){
                             $.ajax({
-                                url: '{{url('approved-pos')}}' + '/' + posted,
+                                url: '{{url('approved-po')}}' + '/' + posted,
                                 type: 'GET',
                                 success: function (response) {
                                     if (response == 'nobatches') {
                                         return toastr.warning('fail', 'Sorry,You must import po batches first.');
-
                                     }
                                     window.location.href = '{{url('/pos')}}';
                                 }

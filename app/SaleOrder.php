@@ -13,6 +13,7 @@ class SaleOrder extends Model
     const STATUS_PROCESSED = 'Processed';
 
     function lines(){
-        return $this->hasMany(InvoiceLine::class,'auto_index','auto_index');
+        return $this->hasMany(InvoiceLine::class,'iInvoiceID','auto_index');
     }
+    
 }
